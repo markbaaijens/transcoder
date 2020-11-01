@@ -1,3 +1,4 @@
+- format Readme: apt install commands an a separate line
 - update installation section in Readme for moving to git & rename of transcoder-file
 - python3 compatability
 - incorparate dr14 measuring
