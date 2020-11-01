@@ -17,17 +17,17 @@ logging to a predefined logfolder.
 - chmod +x mtranscoder.py
 
 ## Usage
-python transcoder.py --help
-(using python is as a prefix optional, ./mtranscoder.py also works)
+`python transcoder.py --help`  
+(using python as a prefix is optional, ./mtranscoder.py also works)
 
 ## Example(s)
-`python transcoder.py --verbose <music folder>/flac --mp3folder <music folder>/mp3 --logfolder .`
+`python transcoder.py --verbose <music folder>/flac --mp3folder <music folder>/mp3 --logfolder .`  
 show output to console, transcoding to mp3 (default to 128 kbs), log to current folder
 
-`python transcoder.py <music folder>/flac --mp3folder <music folder>/mp3 --mp3bitrate 256`
+`python transcoder.py <music folder>/flac --mp3folder <music folder>/mp3 --mp3bitrate 256`  
 transcoding to mp3 at bitrate 256 kbs (default = 128 kbs), no output
 
-`python transcoder.py --dry-run --verbose <music folder>/flac --oggfolder <music folder>/ogg --oggquality 3`
+`python transcoder.py --dry-run --verbose <music folder>/flac --oggfolder <music folder>/ogg --oggquality 3`  
 test run, show output to console, transcoding to ogg at level 3 (default = 1) 
 
 ## Notes
