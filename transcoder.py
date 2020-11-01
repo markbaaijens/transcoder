@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
-# File....: mtranscoder.py
-# Authors.: Mark Baaijens, David Regtien
+# File....: transcoder.py
+# Authors.: Mark Baaijens
 #
 
 import time

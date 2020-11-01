@@ -1,0 +1,4 @@
+- update Readme for moving to git & rename of transcoder-file
+- python3 compatability
+- incorparate dr14 measuring
+- bug: when changing one source-file, cover is not updated when transcoding
