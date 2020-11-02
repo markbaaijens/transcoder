@@ -7,28 +7,31 @@ from the lossless file. Also album art is embedded in the lossy file. In the end
 lossless tree: (lossy) files which do not have a lossless source, are deleted. Script can be run in a headless environment, 
 logging to a predefined logfolder.
 
+## Requirements
+- python3
+
 ## Installation 
 (install dependencies)  
 `sudo apt install vorbis-tools  # oggenc`  
 `sudo apt install lame`  
 `sudo apt install flac`  
-`sudo apt install python-mutagen`  
+`sudo apt install python3-mutagen`  
 
 `wget https://github.com/markbaaijens/transcoder/blob/master/transcoder.py -O transcoder.py`  
 `chmod +x transcoder.py`
 
 ## Usage
-`python transcoder.py --help`  
+`python3 transcoder.py --help`  
 (using python as a prefix is optional, ./transcoder.py also works)
 
 ## Example(s)
-`python transcoder.py --verbose <music folder>/flac --mp3folder <music folder>/mp3 --logfolder .`  
+`python3 transcoder.py --verbose <music folder>/flac --mp3folder <music folder>/mp3 --logfolder .`  
 show output to console, transcoding to mp3 (default to 128 kbs), log to current folder
 
-`python transcoder.py <music folder>/flac --mp3folder <music folder>/mp3 --mp3bitrate 256`  
+`python3 transcoder.py <music folder>/flac --mp3folder <music folder>/mp3 --mp3bitrate 256`  
 transcoding to mp3 at bitrate 256 kbs (default = 128 kbs), no output
 
-`python transcoder.py --dry-run --verbose <music folder>/flac --oggfolder <music folder>/ogg --oggquality 3`  
+`python3 transcoder.py --dry-run --verbose <music folder>/flac --oggfolder <music folder>/ogg --oggquality 3`  
 test run, show output to console, transcoding to ogg at level 3 (default = 1) 
 
 ## Notes
