@@ -154,7 +154,7 @@ def transCodeFileOgg(inputFile, outputFile):
     # Remove the temporary file(s)    
     os.remove(tempOggFile)
 
-    log('- file transcoded to "' + outputFile + '"')    
+    log('- file transcoded')    
     global ogg_transcoded_count
     ogg_transcoded_count +=1
 
