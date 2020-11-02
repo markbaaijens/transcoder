@@ -19,7 +19,7 @@ logging to a predefined logfolder.
 
 ## Usage
 `python transcoder.py --help`  
-(using python as a prefix is optional, ./mtranscoder.py also works)
+(using python as a prefix is optional, ./transcoder.py also works)
 
 ## Example(s)
 `python transcoder.py --verbose <music folder>/flac --mp3folder <music folder>/mp3 --logfolder .`  
@@ -35,7 +35,7 @@ test run, show output to console, transcoding to ogg at level 3 (default = 1)
 - if no value is given to mp3folder, no transcoding to mp3 will take place
 - if no value is given to oggfolder, no transcoding to ogg will take place
 - note that lossy folders *must* exist before transcoding
-- when given --logfolder, operations will be logged to mtranscoder.log
-  - watch log: tail -f <logfolder>mtranscoder.log   
+- when given --logfolder, operations will be logged to transcoder.log
+  - watch log: tail -f <logfolder>transcoder.log   
 - for embedding album art in the transcoded files, the script expects a file cover.jpg 
   in the lossless (flac) folder; otherwise no embedding can take place
