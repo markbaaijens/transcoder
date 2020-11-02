@@ -8,13 +8,14 @@ lossless tree: (lossy) files which do not have a lossless source, are deleted. S
 logging to a predefined logfolder.
 
 ## Installation 
-- install dependencies (Ubuntu 16.04+):
-  sudo apt install vorbis-tools  # oggenc
-  sudo apt install lame 
-  sudo apt install flac 
-  sudo apt install python-mutagen
-- wget https://sourceforge.net/p/aaa/code/HEAD/tree/trunk/transcoder/mtranscoder.py?format=raw -O mtranscoder.py
-- chmod +x mtranscoder.py
+(install dependencies)  
+`sudo apt install vorbis-tools  # oggenc`  
+`sudo apt install lame`  
+`sudo apt install flac`  
+`sudo apt install python-mutagen`  
+
+`wget https://sourceforge.net/p/aaa/code/HEAD/tree/trunk/transcoder/mtranscoder.py?format=raw -O mtranscoder.py`
+`chmod +x transcoder.py`
 
 ## Usage
 `python transcoder.py --help`  
