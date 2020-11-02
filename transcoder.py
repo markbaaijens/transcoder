@@ -216,7 +216,7 @@ def transCodeFileMp3(inputFile, outputFile):
     os.remove(tempWavFile)
     os.remove(tempMP3File)
       
-    log('- file transcoded to "' + outputFile + '"')
+    log('- file transcoded')
     global mp3_transcoded_count
     mp3_transcoded_count += 1
  

@@ -17,7 +17,7 @@ logging to a predefined logfolder.
 `sudo apt install flac`  
 `sudo apt install python3-mutagen`  
 
-`wget https://github.com/markbaaijens/transcoder/blob/master/transcoder.py -O transcoder.py`  
+`https://raw.githubusercontent.com/markbaaijens/transcoder/master/transcoder.py -O transcoder.py`  
 `chmod +x transcoder.py`
 
 ## Usage
