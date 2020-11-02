@@ -279,7 +279,7 @@ def copyTagsToTranscodedFileMp3(losslessFile, lossyFile):
   mp3File = ID3(lossyFile)    
   mp3File.delete()    
       
-  for key,value in flacFileTags.iteritems():
+  for key,value in flacFileTags.items():
     if key == 'title':
       # Map to TIT2 frame
       from mutagen.id3 import TIT2
