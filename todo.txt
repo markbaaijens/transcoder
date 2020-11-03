@@ -1,3 +1,7 @@
-- incorparate dr14 measuring; add to album-tag [DRxx]
-- bug: when changing one source-file, cover is not updated when transcoding
-- remove dependency on lock file (instead, check if process is running with 'ps')
+(effort)
+1. (5) incorparate dr14 measuring; add to album-tag [DRxx]
+2. (1-3) bug: when changing one source-file, cover is not updated when transcoding
+  - delete cover in transcoded tree; or, immediately embed cover on transcoding
+3. (2) remove dependency on lock file (instead, check if process is running with 'ps')
+4. (1) use pip instead of apt for loading python packages
+5. (3) enhance performance by minimizing traversing file tree
