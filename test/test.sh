@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Presume: flacs are in $root/flac
 # Note: all tests are idempotent
 
