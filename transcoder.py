@@ -104,7 +104,7 @@ def transCodeFile(inputFile, outputFile, transcodeFormat):
   # Output is redirected to the target-tree.
   # Folder structure will be copied from the source-tree
 
-  log('Transcoding file: "' + inputFile + '" to ' + transcodeFormat)
+  log('- transcoding file: "' + inputFile + '" to ' + transcodeFormat)
 
   if dry_run == 0:
 
