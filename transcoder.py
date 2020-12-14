@@ -457,7 +457,7 @@ def copyCoverFiles(lossyTree):
   from shutil import copyfile # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
   from math import trunc 
   
-  log('Embed cover-art to transcoded files: ')
+  log('Embed cover-art to transcoded files in ' + lossyTree)
   for dir, dirnames, fileNames in os.walk(source_tree):
     for fileName in sorted(fileNames):
       sourceCoverFullFileName = os.path.join(dir, fileName)
@@ -474,7 +474,7 @@ def copyCoverFiles(lossyTree):
             copyFile = True
 
         if copyFile:
-          log('- copy cover to ' + lossyTree) 
+          log('> copy cover to ' + lossyCoverFullFileName) 
           global cover_files_copied_count
 
           if dry_run == 0:
@@ -506,7 +506,7 @@ def updateCoverMp3(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
 
-    log('- embedding album art to ' + lossyFileName) 
+    log('  - embedding album art to ' + lossyFileName) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.mp3'
@@ -537,7 +537,7 @@ def updateCoverOgg(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
     
-    log('- embedding album art to ' + lossyFileName) 
+    log('  - embedding album art to ' + lossyFileName) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.ogg'
