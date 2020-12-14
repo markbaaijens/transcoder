@@ -745,3 +745,4 @@ log('- empty folders deleted: ' + str(empty_folders_deleted_count))
 
 # Stop logging
 log('End session')
+sys.exit(0)
