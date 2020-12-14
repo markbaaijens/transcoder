@@ -15,6 +15,7 @@ flacs_scanned_count = 0
 mp3_transcoded_count = 0
 ogg_transcoded_count = 0
 cover_files_copied_count = 0
+cover_embedded_count = 0
 obsolete_files_deleted_count = 0
 empty_folders_deleted_count = 0
 
@@ -489,13 +490,16 @@ def copyCoverFiles(lossyTree):
             # Copy the cover file
             copyfile(sourceCoverFullFileName, lossyCoverFullFileName) 
 
+            global cover_embedded_count
             # Embed image in each audio file in the current dir
             for fileName in os.listdir(outputFileBaseDir):
                 lossyFileFullFileName = os.path.join(outputFileBaseDir,  fileName)  
                 if os.path.splitext(fileName)[1] ==  '.' + CONST_MP3:
                     updateCoverMp3(lossyFileFullFileName, sourceCoverFullFileName)
+                    cover_embedded_count += 1
                 if os.path.splitext(fileName)[1] == '.' + CONST_OGG:
                     updateCoverOgg(lossyFileFullFileName, sourceCoverFullFileName)                    
+                    cover_embedded_count += 1
   return  
 
 def updateCoverMp3(lossyFileName, artworkFileName):   
@@ -740,6 +744,7 @@ log('- flacs scanned: ' + str(flacs_scanned_count))
 log('- transcoded to mp3: ' + str(mp3_transcoded_count))
 log('- transcoded to ogg: ' + str(ogg_transcoded_count))
 log('- cover files copied: ' + str(cover_files_copied_count))
+log('- covers embedded in files: ' + str(cover_embedded_count))
 log('- obsolete files deleted: ' + str(obsolete_files_deleted_count))
 log('- empty folders deleted: ' + str(empty_folders_deleted_count))
 
