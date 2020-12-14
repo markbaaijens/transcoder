@@ -40,5 +40,5 @@ test run, show output to console, transcoding to ogg at level 3 (default = 1)
 - note that lossy folders *must* exist before transcoding
 - when given --logfolder, operations will be logged to transcoder.log
   - watch log: tail -f <logfolder>transcoder.log   
-- for embedding album art in the transcoded files, the script expects a file cover.jpg 
-  in the lossless (flac) folder; otherwise no embedding can take place
+- for embedding album art in the transcoded files, the script expects a file *"cover.jpg"* in the lossless (flac) folder; otherwise no embedding can take place
+  - to replace an album cover, remove the transcoded album and simply replace *"cover.jpg"* in the lossless (flac) folder. (However, the cover will not be replaced in the lossless flac files)
