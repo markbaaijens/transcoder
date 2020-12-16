@@ -683,6 +683,10 @@ if os.path.exists(lockfile):
   log('Another process is running: lockfile ' + lockfile + ' found ("rm ' + lockfile + '" to continue). Abort.', True, True)
   sys.exit(1)
 
+# This shouldn't happen on previous exit, though it should on users Crtl+C
+import atexit
+atexit.register(os.remove, lockfile)
+
 # Give a hint for seeing progress
 if (log_dir == '') and (not show_verbose):
   print('Hint: to monitor progress, use --verbose or --logfolder (or both)')
@@ -734,9 +738,6 @@ if ogg_encoding == 1:
   cleanupLossyTree(ogg_tree, CONST_OGG)
 if mp3_encoding == 1:
   cleanupLossyTree(mp3_tree, CONST_MP3)
-
-# Remove lock
-os.remove(lockfile)
 
 # Show summary
 log('Summary')
