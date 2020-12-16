@@ -655,7 +655,6 @@ if (log_dir != ''):
     # When the logdir is invalid, we cannot write to a log obviously; so just print the 
     # error to the console
     print('Location of log_dir = ' + log_dir + ' is not valid. Abort.')
-    # Remove lock
     os.remove(lockfile)
     sys.exit(1)
 
@@ -663,21 +662,18 @@ if (log_dir != ''):
 if (source_tree != ''):
   if not os.path.exists(source_tree):
     log('Location of source_tree = ' + source_tree + ' is not valid. Abort.', True, True)
-    # Remove lock
     os.remove(lockfile)
     sys.exit(1)
 
 if ogg_encoding == 1:
   if not os.path.exists(ogg_tree):
     log('Location of ogg_tree = ' + ogg_tree + ' is not valid. Abort.', True, True)
-    # Remove lock
     os.remove(lockfile)
     sys.exit(1)
 
 if mp3_encoding == 1:
   if not os.path.exists(mp3_tree):
     log('Location of mp3_tree = ' + mp3_tree + ' is not valid. Abort.', True, True)
-    # Remove lock
     os.remove(lockfile)
     sys.exit(1)
 
@@ -739,7 +735,6 @@ if ogg_encoding == 1:
 if mp3_encoding == 1:
   cleanupLossyTree(mp3_tree, CONST_MP3)
 
-# Remove lock
 os.remove(lockfile)
 
 # Show summary
