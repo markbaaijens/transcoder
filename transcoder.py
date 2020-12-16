@@ -655,26 +655,22 @@ if (log_dir != ''):
     # When the logdir is invalid, we cannot write to a log obviously; so just print the 
     # error to the console
     print('Location of log_dir = ' + log_dir + ' is not valid. Abort.')
-    os.remove(lockfile)
     sys.exit(1)
 
 # Check if file trees are valid
 if (source_tree != ''):
   if not os.path.exists(source_tree):
     log('Location of source_tree = ' + source_tree + ' is not valid. Abort.', True, True)
-    os.remove(lockfile)
     sys.exit(1)
 
 if ogg_encoding == 1:
   if not os.path.exists(ogg_tree):
     log('Location of ogg_tree = ' + ogg_tree + ' is not valid. Abort.', True, True)
-    os.remove(lockfile)
     sys.exit(1)
 
 if mp3_encoding == 1:
   if not os.path.exists(mp3_tree):
     log('Location of mp3_tree = ' + mp3_tree + ' is not valid. Abort.', True, True)
-    os.remove(lockfile)
     sys.exit(1)
 
 # Check if there's another process running; if so, bail out...
@@ -682,6 +678,10 @@ lockfile = '/tmp/mtranscoder.lock'
 if os.path.exists(lockfile):
   log('Another process is running: lockfile ' + lockfile + ' found ("rm ' + lockfile + '" to continue). Abort.', True, True)
   sys.exit(1)
+
+# This shouldn't happen on previous exit, though it should on users Crtl+C
+import atexit
+atexit.register(os.remove, lockfile)
 
 # Give a hint for seeing progress
 if (log_dir == '') and (not show_verbose):
@@ -734,8 +734,6 @@ if ogg_encoding == 1:
   cleanupLossyTree(ogg_tree, CONST_OGG)
 if mp3_encoding == 1:
   cleanupLossyTree(mp3_tree, CONST_MP3)
-
-os.remove(lockfile)
 
 # Show summary
 log('Summary')
