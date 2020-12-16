@@ -40,7 +40,7 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
 }
 
 root="./files"
-log_file="mtranscoder.log"
+log_file="transcoder.log"
 
 given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and_filecount
 given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_filecount
