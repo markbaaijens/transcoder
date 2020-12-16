@@ -22,7 +22,7 @@ empty_folders_deleted_count = 0
 # Constants
 CONST_MP3 = 'mp3'
 CONST_OGG = 'ogg'
-CONST_LOG_FILENAME = 'mtranscoder.log'
+CONST_LOG_FILENAME = 'transcoder.log'
 
 def logFileName():
     logFileName = ''
@@ -603,7 +603,7 @@ parser = argparse.ArgumentParser(description='Transcode lossless audio files (fl
 parser.add_argument('sourcefolder', metavar='sourcefolder', type=str, help='folder containing source files (flac)')
 parser.add_argument('-v', '--verbose', help="increase output verbosity; show (more) output to console", action="store_true")
 parser.add_argument('-d', '--dry-run', help="perform a trial run with no changes made",  action="store_true")        
-parser.add_argument('--logfolder', type=str,  help="folder where log (= mtranscoder.log) is stored; no folder is no logging",  nargs=1) 
+parser.add_argument('--logfolder', type=str,  help="folder where log (= transcoder.log) is stored; no folder is no logging",  nargs=1) 
 parser.add_argument('--mp3folder', type=str,  help="folder where transcoded mp3's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
 parser.add_argument('--mp3bitrate', type=int,  help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[128, 256, 384]) 
 parser.add_argument('--oggfolder', type=str,  help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
@@ -678,7 +678,7 @@ if mp3_encoding == 1:
     sys.exit(1)
 
 # Check if there's another process running; if so, bail out...
-lockfile = '/tmp/mtranscoder.lock'
+lockfile = '/tmp/transcoder.lock'
 if os.path.exists(lockfile):
   log('Another process is running: lockfile ' + lockfile + ' found ("rm ' + lockfile + '" to continue). Abort.', True, True)
   sys.exit(1)
