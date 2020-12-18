@@ -406,7 +406,7 @@ def cleanupLossyTree(lossyTree, lossyFormat):
           if not os.path.isfile(sourceFile):                              
             if dry_run == 0:
               os.remove(lossyFile)
-            log('file deleted: ' + lossyFile)
+            log('- file deleted: ' + lossyFile)
             obsolete_files_deleted_count  += 1
 
   # Remove empty directories, first the child directories
