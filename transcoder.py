@@ -105,7 +105,7 @@ def transCodeFile(inputFile, outputFile, transcodeFormat):
   # Output is redirected to the target-tree.
   # Folder structure will be copied from the source-tree
 
-  log('transcoding file: "' + inputFile + '" to ' + transcodeFormat)
+  log('- transcoding file: "' + inputFile + '" to ' + transcodeFormat)
 
   if dry_run == 0:
 
@@ -146,7 +146,7 @@ def transCodeFileOgg(inputFile, outputFile):
     p = subprocess.Popen(["nice", "oggenc", inputFile, "-Q", "-q" + str(ogg_quality), "-o" + tempOggFile], stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
     output = p.communicate()[1]
     if p.returncode != 0:
-        log('an error occured during transcoding')
+        log('- an error occured during transcoding')
         log('=>' + output) 
 
     # Now we are ready with transcoding; copy to file to the desired output directory
@@ -181,7 +181,7 @@ def transCodeFileMp3(inputFile, outputFile):
     p = subprocess.Popen(["nice", "flac", "-s", "-d", "-f", inputFile, '-o', tempWavFile], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = p.communicate()[1]
     if p.returncode != 0:
-      log('an error occured during decoding to .wav')
+      log('- an error occured during decoding to .wav')
       log('=>' + output) 
 
     # Determine name of a *local* temporary MP3-file; this makes it easier for
@@ -198,7 +198,7 @@ def transCodeFileMp3(inputFile, outputFile):
     p = subprocess.Popen(["nice", "lame", "-f", "--silent", "--noreplaygain", "--id3v2-only", "-b" + str(mp3_bitrate), "--tt",  "dummy", tempWavFile, tempMP3File], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = p.communicate()[1]
     if p.returncode != 0:
-      log('an error occured during transcoding')
+      log('- an error occured during transcoding')
       log('=>' + output) 
 
     # Because the input flac file is decoded to wav, all metadata is lost.
@@ -391,7 +391,7 @@ def cleanupLossyTree(lossyTree, lossyFormat):
         if not os.path.isfile(sourceFile):                              
           if dry_run == 0:
             os.remove(lossyFile)
-          log('file deleted: ' + lossyFile)
+          log('- file deleted: ' + lossyFile)
           obsolete_files_deleted_count  += 1
       else: # Found a file but not a transcoded one
         # Check for transcoded files
@@ -425,7 +425,7 @@ def removeEmptyDirectories(tree):
       if dir != tree:  # Never remove the top dir!   
         if dry_run == 0:
           os.rmdir(dir)
-        log('directory removed: ' + dir) 
+        log('- directory removed: ' + dir) 
         global empty_folders_deleted_count
         empty_folders_deleted_count +=1
 
@@ -438,7 +438,7 @@ def transCodeFiles():
   log('Transcode files')
 
   if (ogg_encoding == 0 and mp3_encoding == 0):
-    log('no transcoding to ogg or mp3 is set; nothing to do')
+    log('- no transcoding to ogg or mp3 is set; nothing to do')
     return
 
   for dir, dirnames, fileNames in os.walk(source_tree):
@@ -475,7 +475,7 @@ def copyCoverFiles(lossyTree):
             copyFile = True
 
         if copyFile:
-          log('copying ' + sourceCoverFullFileName + ' to ' + lossyCoverFullFileName) 
+          log('- copying ' + sourceCoverFullFileName + ' to ' + lossyCoverFullFileName) 
           global cover_files_copied_count
           cover_files_copied_count += 1
 
@@ -510,7 +510,7 @@ def updateCoverMp3(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
 
-    log('embedding album art ' + artworkFileName + ' to ' + lossyFileName) 
+    log('- embedding album art ' + artworkFileName + ' to ' + lossyFileName) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.mp3'
@@ -541,7 +541,7 @@ def updateCoverOgg(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
     
-    log('embedding album art ' + artworkFileName + ' to ' + lossyFileName) 
+    log('- embedding album art ' + artworkFileName + ' to ' + lossyFileName) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.ogg'
@@ -690,25 +690,25 @@ if (log_dir == '') and (not show_verbose):
 # Start logging
 log('Start session')
 
-log('source_tree: ' + source_tree, True)
-log('dry_run: ' + str(dry_run))
-log('show_verbose: ' + str(show_verbose))
+log('- source_tree: ' + source_tree, True)
+log('- dry_run: ' + str(dry_run))
+log('- show_verbose: ' + str(show_verbose))
 
-logText = 'ogg_tree: ' + ogg_tree
+logText = '- ogg_tree: ' + ogg_tree
 if (ogg_tree == ''):
     logText += '(empty) => no transcoding'
 log(logText, True)
 if (ogg_tree != ''):
-    log('ogg_quality: ' + str(ogg_quality))
+    log('- ogg_quality: ' + str(ogg_quality))
 
-logText = 'mp3_tree: ' + mp3_tree
+logText = '- mp3_tree: ' + mp3_tree
 if (mp3_tree == ''):
     logText += '(empty) => no transcoding'
 log(logText, True)
 if (mp3_tree != ''):
-    log('mp3_bitrate: ' + str(mp3_bitrate))
+    log('- mp3_bitrate: ' + str(mp3_bitrate))
 
-logText = 'logging to: ' + logFileName()
+logText = '- logging to: ' + logFileName()
 if (logFileName() == ''):
     logText += '(empty) => no logging'
 log(logText)    
@@ -740,13 +740,13 @@ os.remove(lockfile)
 
 # Show summary
 log('Summary')
-log('flacs scanned: ' + str(flacs_scanned_count))
-log('transcoded to mp3: ' + str(mp3_transcoded_count))
-log('transcoded to ogg: ' + str(ogg_transcoded_count))
-log('cover files copied: ' + str(cover_files_copied_count))
-log('covers embedded in files: ' + str(cover_embedded_count))
-log('obsolete files deleted: ' + str(obsolete_files_deleted_count))
-log('empty folders deleted: ' + str(empty_folders_deleted_count))
+log('- flacs scanned: ' + str(flacs_scanned_count))
+log('- transcoded to mp3: ' + str(mp3_transcoded_count))
+log('- transcoded to ogg: ' + str(ogg_transcoded_count))
+log('- cover files copied: ' + str(cover_files_copied_count))
+log('- covers embedded in files: ' + str(cover_embedded_count))
+log('- obsolete files deleted: ' + str(obsolete_files_deleted_count))
+log('- empty folders deleted: ' + str(empty_folders_deleted_count))
 
 # Stop logging
 log('End session')
