@@ -376,31 +376,17 @@ def cleanupLossyTree(lossyTree, lossyFormat):
   log('Cleanup ' + lossyTree) 
   global obsolete_files_deleted_count 
 
-  for dir, dirnames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown       
-    for fileName in fileNames:
-      # Check for transcoded files
-      if fnmatch(fileName, '*.' + lossyFormat): # We have a transcoded file          
-        lossyFile = os.path.join(dir, fileName) # The full pathname of the lossy file
-        
-        # Derive the sourceFile
-        sourcePath = dir.replace(lossyTree, source_tree)        
-        sourceFile = os.path.join(sourcePath,fileName)        
-        sourceFile = os.path.splitext(sourceFile)[0] + '.flac' # Change extension   
-
-        # Check if there exists a corresponding sourceFile
-        if not os.path.isfile(sourceFile):                              
-          if dry_run == 0:
-            os.remove(lossyFile)
-          log('- file deleted: ' + lossyFile)
-          obsolete_files_deleted_count  += 1
-      else: # Found a file but not a transcoded one
+  for dir, dirNames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown       
+    if len(fileNames) > 0:
+      for fileName in fileNames:
         # Check for transcoded files
-        if fnmatch(fileName, '*.*'): # We have a not-transcoded file          
+        if fnmatch(fileName, '*.' + lossyFormat): # We have a transcoded file          
           lossyFile = os.path.join(dir, fileName) # The full pathname of the lossy file
-        
+          
           # Derive the sourceFile
           sourcePath = dir.replace(lossyTree, source_tree)        
           sourceFile = os.path.join(sourcePath,fileName)        
+          sourceFile = os.path.splitext(sourceFile)[0] + '.flac' # Change extension   
 
           # Check if there exists a corresponding sourceFile
           if not os.path.isfile(sourceFile):                              
@@ -408,6 +394,21 @@ def cleanupLossyTree(lossyTree, lossyFormat):
               os.remove(lossyFile)
             log('- file deleted: ' + lossyFile)
             obsolete_files_deleted_count  += 1
+        else: # Found a file but not a transcoded one
+          # Check for transcoded files
+          if fnmatch(fileName, '*.*'): # We have a not-transcoded file          
+            lossyFile = os.path.join(dir, fileName) # The full pathname of the lossy file
+          
+            # Derive the sourceFile
+            sourcePath = dir.replace(lossyTree, source_tree)        
+            sourceFile = os.path.join(sourcePath,fileName)        
+
+            # Check if there exists a corresponding sourceFile
+            if not os.path.isfile(sourceFile):                              
+              if dry_run == 0:
+                os.remove(lossyFile)
+              log('- file deleted: ' + lossyFile)
+              obsolete_files_deleted_count  += 1
 
   # Remove empty directories, first the child directories
   removeEmptyDirectories(lossyTree)
@@ -420,8 +421,8 @@ def cleanupLossyTree(lossyTree, lossyFormat):
 def removeEmptyDirectories(tree):
 
   # Remove empty directories
-  for dir, dirnames, fileNames in os.walk(tree, topdown=False):
-    if len(dirnames) == 0 and len(fileNames) == 0:
+  for dir, dirNames, fileNames in os.walk(tree, topdown=False):
+    if len(dirNames) == 0 and len(fileNames) == 0:
       if dir != tree:  # Never remove the top dir!   
         if dry_run == 0:
           os.rmdir(dir)
@@ -441,13 +442,14 @@ def transCodeFiles():
     log('- no transcoding to ogg or mp3 is set; nothing to do')
     return
 
-  for dir, dirnames, fileNames in os.walk(source_tree):
-    for fileName in sorted(fileNames):
-      sourceFileFullPathName = os.path.join(dir, fileName)
-      if fnmatch(sourceFileFullPathName, "*.flac"):
-        global flacs_scanned_count
-        flacs_scanned_count += 1
-        transCodeFileCheck(sourceFileFullPathName)  
+  for dir, dirNames, fileNames in os.walk(source_tree):
+    if len(fileNames) > 0:
+      for fileName in sorted(fileNames):
+        sourceFileFullPathName = os.path.join(dir, fileName)
+        if fnmatch(sourceFileFullPathName, "*.flac"):
+          global flacs_scanned_count
+          flacs_scanned_count += 1
+          transCodeFileCheck(sourceFileFullPathName)  
 
   return
 
@@ -459,47 +461,48 @@ def copyCoverFiles(lossyTree):
   from math import trunc 
   
   log('Copy cover files to lossy tree: ' + lossyTree)
-  for dir, dirnames, fileNames in os.walk(source_tree):
-    for fileName in sorted(fileNames):
-      sourceCoverFullFileName = os.path.join(dir, fileName)
-      if fnmatch(sourceCoverFullFileName, "*/cover.jpg"):
+  for dir, dirNames, fileNames in os.walk(source_tree):
+    if len(fileNames) > 0:
+      for fileName in sorted(fileNames):
+        sourceCoverFullFileName = os.path.join(dir, fileName)
+        if fnmatch(sourceCoverFullFileName, "*/cover.jpg"):
 
-        # Only copy file when (1) target cover file does not exit or (2) target cover file is older
-        copyFile = False
-        lossyCoverFullFileName = sourceCoverFullFileName.replace(source_tree, lossyTree)  
-        if not os.path.isfile(lossyCoverFullFileName):   # Check if target file does not exist 
-          copyFile = True
-        else:
-          # Check if source cover file is newer than target; using trunc to avoid to precise comparison
-          if trunc(os.path.getmtime(sourceCoverFullFileName)) > trunc(os.path.getmtime(lossyCoverFullFileName)): 
+          # Only copy file when (1) target cover file does not exit or (2) target cover file is older
+          copyFile = False
+          lossyCoverFullFileName = sourceCoverFullFileName.replace(source_tree, lossyTree)  
+          if not os.path.isfile(lossyCoverFullFileName):   # Check if target file does not exist 
             copyFile = True
+          else:
+            # Check if source cover file is newer than target; using trunc to avoid to precise comparison
+            if trunc(os.path.getmtime(sourceCoverFullFileName)) > trunc(os.path.getmtime(lossyCoverFullFileName)): 
+              copyFile = True
 
-        if copyFile:
-          log('- copying ' + sourceCoverFullFileName + ' to ' + lossyCoverFullFileName) 
-          global cover_files_copied_count
-          cover_files_copied_count += 1
+          if copyFile:
+            log('- copying ' + sourceCoverFullFileName + ' to ' + lossyCoverFullFileName) 
+            global cover_files_copied_count
+            cover_files_copied_count += 1
 
-          if dry_run == 0:
-            # Create intermediate-level directories in the output tree; normally, these already exist
-            # because during transcoding they will be created; but this is 'just in case'
-            outputFileBaseDir = os.path.split(lossyCoverFullFileName)[0]
-            if not os.path.exists(outputFileBaseDir):
-              # Make all intermediate-level directories needed to contain the leaf directory.
-              os.makedirs(outputFileBaseDir)       
+            if dry_run == 0:
+              # Create intermediate-level directories in the output tree; normally, these already exist
+              # because during transcoding they will be created; but this is 'just in case'
+              outputFileBaseDir = os.path.split(lossyCoverFullFileName)[0]
+              if not os.path.exists(outputFileBaseDir):
+                # Make all intermediate-level directories needed to contain the leaf directory.
+                os.makedirs(outputFileBaseDir)       
 
-            # Copy the cover file
-            copyfile(sourceCoverFullFileName, lossyCoverFullFileName) 
+              # Copy the cover file
+              copyfile(sourceCoverFullFileName, lossyCoverFullFileName) 
 
-            global cover_embedded_count
-            # Embed image in each audio file in the current dir
-            for fileName in os.listdir(outputFileBaseDir):
-                lossyFileFullFileName = os.path.join(outputFileBaseDir,  fileName)  
-                if os.path.splitext(fileName)[1] ==  '.' + CONST_MP3:
-                    updateCoverMp3(lossyFileFullFileName, sourceCoverFullFileName)
-                    cover_embedded_count += 1
-                if os.path.splitext(fileName)[1] == '.' + CONST_OGG:
-                    updateCoverOgg(lossyFileFullFileName, sourceCoverFullFileName)                    
-                    cover_embedded_count += 1
+              global cover_embedded_count
+              # Embed image in each audio file in the current dir
+              for fileName in os.listdir(outputFileBaseDir):
+                  lossyFileFullFileName = os.path.join(outputFileBaseDir,  fileName)  
+                  if os.path.splitext(fileName)[1] ==  '.' + CONST_MP3:
+                      updateCoverMp3(lossyFileFullFileName, sourceCoverFullFileName)
+                      cover_embedded_count += 1
+                  if os.path.splitext(fileName)[1] == '.' + CONST_OGG:
+                      updateCoverOgg(lossyFileFullFileName, sourceCoverFullFileName)                    
+                      cover_embedded_count += 1
   return  
 
 def updateCoverMp3(lossyFileName, artworkFileName):   
@@ -536,36 +539,36 @@ def updateCoverOgg(lossyFileName, artworkFileName):
     #
     # Embed album art into transcoded file: OGG
     #
-    import base64; from mutagen.oggvorbis import OggVorbis; 
-    from mutagen.flac import Picture; import PIL.Image; 
+    import base64; from mutagen.oggvorbis import OggVorbis
+    from mutagen.flac import Picture; import PIL.Image
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
     
-    log('- embedding album art ' + artworkFileName + ' to ' + lossyFileName) 
+    log('- embedding album art ' + artworkFileName + ' to ' + lossyFileName)
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.ogg'
     copyfile(lossyFileName, tempLossyFile) 
 
     # Embed the image
-    o=OggVorbis(tempLossyFile);
+    o=OggVorbis(tempLossyFile)
 
-    im = PIL.Image.open(artworkFileName);
-    w,h = im.size; 
+    im = PIL.Image.open(artworkFileName)
+    w,h = im.size
     
-    p = Picture(); 
-    imdata = open(artworkFileName,'rb').read();
-    p.data = imdata; 
-    p.type = 3; 
-    p.desc = ''; 
-    p.mime = 'image/jpeg';
-    p.width = w; 
-    p.height = h; 
-    p.depth = 24; 
+    p = Picture()
+    imdata = open(artworkFileName,'rb').read()
+    p.data = imdata
+    p.type = 3
+    p.desc = ''
+    p.mime = 'image/jpeg'
+    p.width = w
+    p.height = h
+    p.depth = 24
     
-    dt = p.write(); 
-    enc = base64.b64encode(dt).decode('ascii');
-    o['metadata_block_picture'] = [enc];
+    dt = p.write()
+    enc = base64.b64encode(dt).decode('ascii')
+    o['metadata_block_picture'] = [enc]
     o.save()   
 
     # Now we are ready; copy the file to the desired output directory
