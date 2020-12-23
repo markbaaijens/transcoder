@@ -16,7 +16,7 @@ logging to a predefined logfolder.
 `sudo apt install lame`  
 `sudo apt install flac`  
 `sudo apt install python3-mutagen # alternative $ pip3 install mutagen`
-`sudo apt install python3-pil  # alternative $ pip3 install pil`
+`sudo apt install python3-pil  # alternative $ pip3 install pillow`
 
 `wget https://raw.githubusercontent.com/markbaaijens/transcoder/master/transcoder.py -O transcoder.py`  
 `chmod +x transcoder.py`
