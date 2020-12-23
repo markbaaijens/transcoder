@@ -121,7 +121,10 @@ def transCodeFile(inputFile, outputFile, transcodeFormat):
 
     # For mp3-encoding
     if transcodeFormat == CONST_MP3:
-        transCodeFileMp3(inputFile, outputFile)    
+        transCodeFileMp3(inputFile, outputFile)
+
+    if os.path.exists(outputFilebasedir + "/cover.jpg"):
+        os.remove(outputFilebasedir + "/cover.jpg")
     
   return
     
