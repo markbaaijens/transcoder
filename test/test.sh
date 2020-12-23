@@ -36,7 +36,7 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
     rm -f $root/$log_file
     rm -rf "$root/mp3/Nightwish/Human II Nature/cover.jpg"
     python3 ../transcoder.py $root/flac/ --mp3folder $root/mp3 --logfolder $root/
-    if cat $root/$log_file | grep -q "embedding album art \[source_tree\]/Nightwish/Human II Nature/cover.jpg"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "\- copying to \[mp3_tree\]/Nightwish/Human II Nature/cover.jpg"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
 root="./files"
