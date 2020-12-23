@@ -33,7 +33,10 @@ show output to console, transcoding to mp3 (default to 128 kbs), log to current 
 transcoding to mp3 at bitrate 256 kbs (default = 128 kbs), no output
 
 `python3 transcoder.py --dry-run --verbose <music folder>/flac --oggfolder <music folder>/ogg --oggquality 3`  
-test run, show output to console, transcoding to ogg at level 3 (default = 1) 
+test run, show output to console, transcoding to ogg at level 3 (default = 1)
+
+`python3 transcoder.py --verbose <music folder>/flac/ --mp3folder <music folder>/mp3 --oggfolder <music folder>/ogg`
+transcode simultaneously to mp3 and ogg
 
 ## Notes
 - if no value is given to mp3folder, no transcoding to mp3 will take place
