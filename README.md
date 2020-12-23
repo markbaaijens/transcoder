@@ -46,3 +46,4 @@ transcode simultaneously to mp3 and ogg
   - watch log: tail -f <logfolder>transcoder.log   
 - for embedding album art in the transcoded files, the script expects a file cover.jpg 
   in the lossless (flac) folder; otherwise no embedding can take place
+- transcoded files won't be checked on there current compression (MP3 bitrate / OGG quality level) and will be ignored
