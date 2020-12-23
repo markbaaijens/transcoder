@@ -376,7 +376,7 @@ def cleanupLossyTree(lossyTree, lossyFormat):
   log('Cleanup ' + lossyTree) 
   global obsolete_files_deleted_count 
 
-  for dir, dirnames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown       
+  for dir, dirNames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown       
     for fileName in fileNames:
       # Check for transcoded files
       if fnmatch(fileName, '*.' + lossyFormat): # We have a transcoded file          
@@ -536,8 +536,8 @@ def updateCoverOgg(lossyFileName, artworkFileName):
     #
     # Embed album art into transcoded file: OGG
     #
-    import base64; from mutagen.oggvorbis import OggVorbis; 
-    from mutagen.flac import Picture; import PIL.Image; 
+    import base64; from mutagen.oggvorbis import OggVorbis
+    from mutagen.flac import Picture; import PIL.Image
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
     
@@ -548,24 +548,24 @@ def updateCoverOgg(lossyFileName, artworkFileName):
     copyfile(lossyFileName, tempLossyFile) 
 
     # Embed the image
-    o=OggVorbis(tempLossyFile);
+    o=OggVorbis(tempLossyFile)
 
-    im = PIL.Image.open(artworkFileName);
-    w,h = im.size; 
+    im = PIL.Image.open(artworkFileName)
+    w,h = im.size
     
-    p = Picture(); 
-    imdata = open(artworkFileName,'rb').read();
-    p.data = imdata; 
-    p.type = 3; 
-    p.desc = ''; 
-    p.mime = 'image/jpeg';
-    p.width = w; 
-    p.height = h; 
-    p.depth = 24; 
+    p = Picture()
+    imdata = open(artworkFileName,'rb').read()
+    p.data = imdata
+    p.type = 3
+    p.desc = ''
+    p.mime = 'image/jpeg'
+    p.width = w
+    p.height = h
+    p.depth = 24
     
-    dt = p.write(); 
-    enc = base64.b64encode(dt).decode('ascii');
-    o['metadata_block_picture'] = [enc];
+    dt = p.write()
+    enc = base64.b64encode(dt).decode('ascii')
+    o['metadata_block_picture'] = [enc]
     o.save()   
 
     # Now we are ready; copy the file to the desired output directory
@@ -677,15 +677,20 @@ if mp3_encoding == 1:
     log('Location of mp3_tree = ' + mp3_tree + ' is not valid. Abort.', True, True)
     sys.exit(1)
 
-# Check if there's another process running; if so, bail out...
+# Check via existence of a lockfile, if there's another process running; if so, bail out...
 lockfile = '/tmp/transcoder.lock'
 if os.path.exists(lockfile):
   log('Starting transcoder. But another process is still running: lockfile ' + lockfile + ' found ("rm ' + lockfile + '" to continue). Abort.', True, True)
   sys.exit(1)
 
-# This shouldn't happen on previous exit, though it should on users Crtl+C
+# Remove lockfile on exit, even when the user hits Crtl+C
 import atexit
 atexit.register(os.remove, lockfile)
+
+# Place lock file 
+outputFile = open(lockfile,'w')
+outputFile.write('lock')
+outputFile.close()
 
 # Give a hint for seeing progress
 if (log_dir == '') and (not show_verbose):
@@ -716,11 +721,6 @@ logText = '- logging to: ' + logFileName()
 if (logFileName() == ''):
     logText += '(empty) => no logging'
 log(logText)    
-
-# Place lock file 
-outputFile = open(lockfile,'w')
-outputFile.write('lock')
-outputFile.close()
 
 # Scan all files in source_tree, check every individual file if it needs
 # transcoding or tag synchronizing.
