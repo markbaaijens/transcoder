@@ -683,7 +683,7 @@ if mp3_encoding == 1:
 # Check via existence of a lockfile, if there's another process running; if so, bail out...
 lockfile = '/tmp/transcoder.lock'
 if os.path.exists(lockfile):
-  log('Starting transcoder. But another process is still running: lockfile ' + lockfile + ' found ("rm ' + lockfile + '" to continue). Abort.', True, True)
+  log('Starting transcoder. But another process is still running, lockfile found ("rm ' + lockfile + '" to continue). Abort.', True, True)
   sys.exit(1)
 
 # Remove lockfile on exit, even when the user hits Crtl+C
