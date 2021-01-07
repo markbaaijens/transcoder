@@ -59,19 +59,19 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
 
     # Picks a random MP3-file from the list of known files
     image="${images[$rand]}"
-    rm -rf $image
+    rm -rf "$image"
     echo "\"$image\" removed"
-    test=${$image/""/$destination}
-    echo "$test"
+    cover=${image/$destination/"\- copying to \[mp3_tree\]"}
+    echo "$cover"
 
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
-    if cat $root/$log_file | grep -q "\- copying to \[mp3_tree\]/Nightwish/Human II Nature/cover.jpg"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "$cover"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
 root="./files"
 log_file="transcoder.log"
 
-#given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and_filecount
-#given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_filecount
-#given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_filecount
+given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and_filecount
+given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_filecount
+given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_filecount
 given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
