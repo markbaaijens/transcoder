@@ -39,6 +39,7 @@ function given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_log
 
     readarray -d '' mp3s < <(find $destination -type f -name "*.mp3" -print0)
     rm -rf "${mp3s[0]}"
+
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
     
     if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
