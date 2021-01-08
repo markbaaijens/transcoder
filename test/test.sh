@@ -61,6 +61,23 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
     if cat $root/$log_file | grep -q "$searchstringlog"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
+function given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed {
+    echo "* ${FUNCNAME[0]}"
+    source="$root/flac"
+    destination="$root/mp3"
+    python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
+    rm -f $root/$log_file
+
+    readarray -d '' images < <(find $source -type f -name "cover.jpg" -print0)
+    image="${images[0]}"
+    touch "$image"
+    python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
+
+    if cat $root/$log_file | grep -q "\- cover files copied: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    nmp3s2embed=$(find "${image/"cover.jpg"/""}" -type f -name "*.flac" | wc -l)
+    if cat $root/$log_file | grep -q "\- covers embedded in files: $nmp3s2embed"; then echo "(log) OK"; else echo "(log) Fail"; fi
+}
+
 root="./files"
 log_file="transcoder.log"
 
@@ -68,3 +85,4 @@ given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and
 given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_ogg_filecount
 given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount
 given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
+given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
