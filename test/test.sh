@@ -37,8 +37,9 @@ function given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_log
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
     rm -f $root/$log_file
 
-    readarray -d '' flacs < <(find $destination -type f -name "*.mp3" -print0)
-    rm -rf "${flacs[0]}"
+    readarray -d '' mp3s < <(find $destination -type f -name "*.mp3" -print0)
+    rm -rf "${mp3s[0]}"
+
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
     
     if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
@@ -50,15 +51,30 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
     source="$root/flac"
     destination="$root/mp3"
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
+    rm -f $root/$log_file
     
     readarray -d '' images < <(find $destination -type f -name "cover.jpg" -print0)
-    rm -f $root/$log_file
     image="${images[0]}"
     rm -rf "$image"
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
     searchstringlog=${image/$destination/"\- copying to \[mp3_tree\]"}
     if cat $root/$log_file | grep -q "$searchstringlog"; then echo "(log) OK"; else echo "(log) Fail"; fi
+}
+
+function given_all_files_when_changed_to_newer_date_of_flac_then_retranscode {
+    echo "* ${FUNCNAME[0]}"
+    source="$root/flac"
+    destination="$root/mp3"
+    python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
+    rm -f $root/$log_file
+
+    readarray -d '' flacs < <(find $source -type f -name "*.flac" -print0)
+    touch "${flacs[0]}"
+    python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
+
+    if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    rm -f $root/$log_file
 }
 
 function given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed {
@@ -85,4 +101,5 @@ given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and
 given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_ogg_filecount
 given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount
 given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
+given_all_files_when_changed_to_newer_date_of_flac_then_retranscode
 given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
