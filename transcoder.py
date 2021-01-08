@@ -467,7 +467,10 @@ def copyCoverFiles(lossyTree):
       sourceCoverFullFileName = os.path.join(dir, fileName)
       if fnmatch(sourceCoverFullFileName, "*/cover.jpg"):
 
-        # Only copy file when (1) target cover file does not exit or (2) target cover file is older
+        # Only copy file when:
+        # (1) target cover file does not exit
+        # (2) target cover file is older
+        # (3) cover files have different file size
         copyFile = False
         lossyCoverFullFileName = sourceCoverFullFileName.replace(source_tree, lossyTree)  
         if not os.path.isfile(lossyCoverFullFileName):   # Check if target file does not exist 
@@ -476,8 +479,15 @@ def copyCoverFiles(lossyTree):
           # Check if source cover file is newer than target; using trunc to avoid to precise comparison
           if trunc(os.path.getmtime(sourceCoverFullFileName)) > trunc(os.path.getmtime(lossyCoverFullFileName)): 
             copyFile = True
+          else:
+            # Check whether source cover file has a different file size
+            if os.path.getsize(sourceCoverFullFileName) != os.path.getsize(lossyCoverFullFileName):
+              copyFile = True
 
+        log(str(copyFile))
         if copyFile:
+          if os.path.isfile(lossyCoverFullFileName):
+            os.remove(lossyCoverFullFileName)
           log('- copying to ' + lossyCoverFullFileName) 
           global cover_files_copied_count
           cover_files_copied_count += 1
