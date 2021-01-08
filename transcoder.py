@@ -477,7 +477,7 @@ def copyCoverFiles(lossyTree):
           copyFile = True
         else:
           # Check if source cover file is newer than target; using trunc to avoid to precise comparison
-          if trunc(os.path.getmtime(sourceCoverFullFileName)) > trunc(os.path.getmtime(lossyCoverFullFileName)): 
+          if os.path.getmtime(sourceCoverFullFileName) > os.path.getmtime(lossyCoverFullFileName): 
             copyFile = True
           #else:
             # Check whether source cover file has a different file size
@@ -485,8 +485,6 @@ def copyCoverFiles(lossyTree):
               #copyFile = True
 
         if copyFile:
-          #if os.path.isfile(lossyCoverFullFileName):
-            #os.remove(lossyCoverFullFileName)
           log('- copying to ' + lossyCoverFullFileName) 
           global cover_files_copied_count
           cover_files_copied_count += 1
