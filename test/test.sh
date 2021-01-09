@@ -76,6 +76,21 @@ function given_all_files_when_changed_to_newer_date_of_flac_then_retranscode {
     if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
+function given_all_files_when_delete_source_file_then_delete_lossy_file {
+    echo "* ${FUNCNAME[0]}"
+    source="$root/flac"
+    python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
+    rm -f $root/$log_file
+
+    readarray -d '' flacs < <(find $source -type f -name "*.flac" -print0)
+    rm -rf "${flacs[0]}"
+    python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
+
+    if find $root/mp3 -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "(count mp3) OK"; else echo "(count mp3) Fail"; fi
+    if find $root/ogg -type f -name "*.ogg" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "(count ogg) OK"; else echo "(count ogg) Fail"; fi
+    if cat $root/$log_file | grep -q "\- obsolete files deleted: 2"; then echo "(log) OK"; else echo "(log) Fail"; fi
+}
+
 root="./files"
 log_file="transcoder.log"
 
@@ -84,3 +99,4 @@ given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and
 given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount
 given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
 given_all_files_when_changed_to_newer_date_of_flac_then_retranscode
+given_all_files_when_delete_source_file_then_delete_lossy_file
