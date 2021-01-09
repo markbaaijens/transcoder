@@ -74,7 +74,6 @@ function given_all_files_when_changed_to_newer_date_of_flac_then_retranscode {
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
     if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
-    rm -f $root/$log_file
 }
 
 function given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed {
