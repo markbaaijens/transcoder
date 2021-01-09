@@ -90,8 +90,7 @@ function given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
     if cat $root/$log_file | grep -q "\- cover files copied: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
-    nmp3s2embed=$(find "${image/"cover.jpg"/""}" -type f -name "*.flac" | wc -l)
-    if cat $root/$log_file | grep -q "\- covers embedded in files: $nmp3s2embed"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "\- covers embedded in files: $(find "${image/"cover.jpg"/""}" -type f -name "*.flac" | wc -l)"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
 root="./files"

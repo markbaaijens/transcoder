@@ -475,7 +475,7 @@ def copyCoverFiles(lossyTree):
         if not os.path.isfile(lossyCoverFullFileName):   # Check if target file does not exist 
           copyFile = True
         else:
-          # Check if source cover file is newer than target; using trunc to avoid to precise comparison
+          # Check if source cover file is newer than target
           if os.path.getmtime(sourceCoverFullFileName) > os.path.getmtime(lossyCoverFullFileName): 
             copyFile = True
 
