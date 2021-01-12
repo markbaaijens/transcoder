@@ -119,8 +119,7 @@ function given_all_files_when_delete_source_folder_and_transcode_then_delete_los
 
     if find $root/mp3 -type d | wc -l  | grep -q "$(find $source -type d | wc -l)"; then echo "(count mp3 folders) OK"; else echo "(count mp3 folders) Fail"; fi
     if find $root/ogg -type d | wc -l  | grep -q "$(find $source -type d | wc -l)"; then echo "(count ogg folders) OK"; else echo "(count ogg folders) Fail"; fi
-    # The "directory removed:" should occure more than once
-    if  cat $root/$log_file | grep -q "\- directory removed: "; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "\- empty folders deleted: $(fgrep -o "directory removed: " $root/$log_file | wc -l)"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
 root="./files"
