@@ -113,11 +113,12 @@ function given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_de
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
     rm -f $root/$log_file
 
-    mkdir $root/mp3/Temp1
-    mkdir $root/mp3/Temp2    
+    mkdir $root/ogg/Temp1
+    mkdir $root/mp3/Temp2
+    mkdir $root/mp3/Temp3
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
 
-    if cat $root/$log_file | grep -q "\- empty folders deleted: 2"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "\- empty folders deleted: 3"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
 root="./files"
