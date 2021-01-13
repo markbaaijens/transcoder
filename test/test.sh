@@ -107,6 +107,20 @@ function given_all_files_when_delete_source_file_then_delete_lossy_file {
     if cat $root/$log_file | grep -q "\- obsolete files deleted: 2"; then echo "(log) OK"; else echo "(log) Fail"; fi
 }
 
+function given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders {
+    echo "* ${FUNCNAME[0]}"
+    source="$root/flac"
+    python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
+    rm -f $root/$log_file
+
+    mkdir $root/ogg/Temp1
+    mkdir $root/mp3/Temp2
+    mkdir $root/mp3/Temp3
+    python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
+
+    if cat $root/$log_file | grep -q "\- empty folders deleted: 3"; then echo "(log) OK"; else echo "(log) Fail"; fi
+}
+
 root="./files"
 log_file="transcoder.log"
 
@@ -117,3 +131,4 @@ given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
 given_all_files_when_changed_to_newer_date_of_flac_then_retranscode
 given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
 given_all_files_when_delete_source_file_then_delete_lossy_file
+given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders
