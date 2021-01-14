@@ -137,22 +137,49 @@ function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags
     rm -f $ogg_file
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
 
-    flac_title_tag=$(metaflac "${flacs[0]}" --show-tag=TITLE | cut -d"=" -f 2)
-    ogg_title_tag=$(vorbiscomment -l "$ogg_file" | grep "TITLE" | cut -d"=" -f 2)
-    mp3_title_tag=$(ffprobe "$mp3_file" -show_entries format_tags=title -of compact=p=0:nk=1 -v 0)
-    if [[ "$flac_title_tag" == "$ogg_title_tag" ]]; then echo "OK"; else echo "Fail"; fi
-    if [[ "$flac_title_tag" == "$mp3_title_tag" ]]; then echo "OK"; else echo "Fail"; fi
+    failure=0
+    flac_tag=$(metaflac "${flacs[0]}" --show-tag=TITLE | cut -d"=" -f 2)
+    ogg_tag=$(vorbiscomment -l "$ogg_file" | grep "TITLE" | cut -d"=" -f 2)
+    mp3_tag=$(ffprobe "$mp3_file" -show_entries format_tags=title -of compact=p=0:nk=1 -v 0)
+    if [[ "$flac_tag" != "$ogg_tag" ]]; then failure=1; fi
+    if [[ "$flac_tag" != "$mp3_tag" ]]; then failure=1; fi
+
+    flac_tag=$(metaflac "${flacs[0]}" --show-tag=ARTIST | cut -d"=" -f 2)
+    ogg_tag=$(vorbiscomment -l "$ogg_file" | grep "ARTIST" | cut -d"=" -f 2)
+    mp3_tag=$(ffprobe "$mp3_file" -show_entries format_tags=artist -of compact=p=0:nk=1 -v 0)
+    if [[ "$flac_tag" != "$ogg_tag" ]]; then failure=1; fi
+    if [[ "$flac_tag" != "$mp3_tag" ]]; then failure=1; fi
+    
+    flac_tag=$(metaflac "${flacs[0]}" --show-tag=ALBUM | cut -d"=" -f 2)
+    ogg_tag=$(vorbiscomment -l "$ogg_file" | grep "ALBUM" | cut -d"=" -f 2)
+    mp3_tag=$(ffprobe "$mp3_file" -show_entries format_tags=album -of compact=p=0:nk=1 -v 0)
+    if [[ "$flac_tag" != "$ogg_tag" ]]; then failure=1; fi
+    if [[ "$flac_tag" != "$mp3_tag" ]]; then failure=1; fi
+    
+    flac_tag=$(metaflac "${flacs[0]}" --show-tag=DATE | cut -d"=" -f 2)
+    ogg_tag=$(vorbiscomment -l "$ogg_file" | grep "DATE" | cut -d"=" -f 2)
+    mp3_tag=$(ffprobe "$mp3_file" -show_entries format_tags=date -of compact=p=0:nk=1 -v 0)
+    if [[ "$flac_tag" != "$ogg_tag" ]]; then failure=1; fi
+    if [[ "$flac_tag" != "$mp3_tag" ]]; then failure=1; fi
+    
+    flac_tag=$(metaflac "${flacs[0]}" --show-tag=TRACKNUMBER | cut -d"=" -f 2)
+    ogg_tag=$(vorbiscomment -l "$ogg_file" | grep "TRACKNUMBER" | cut -d"=" -f 2)
+    mp3_tag=$(ffprobe "$mp3_file" -show_entries format_tags=track -of compact=p=0:nk=1 -v 0)
+    if [[ "$flac_tag" != "$ogg_tag" ]]; then failure=1; fi
+    if [[ "$flac_tag" != "$mp3_tag" ]]; then failure=1; fi
+
+    if [[ $failure == 0 ]]; then echo "(tags) OK"; else echo "(tags) Fail"; fi
 }
 
 root="./files"
 log_file="transcoder.log"
 
-#given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and_mp3_filecount
-#given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_ogg_filecount
-#given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount
-#given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
-#given_all_files_when_changed_to_newer_date_of_flac_then_retranscode
-#given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
-#given_all_files_when_delete_source_file_then_delete_lossy_file
-#given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders
+given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and_mp3_filecount
+given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_ogg_filecount
+given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount
+given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
+given_all_files_when_changed_to_newer_date_of_flac_then_retranscode
+given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
+given_all_files_when_delete_source_file_then_delete_lossy_file
+given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders
 given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags_in_mp3_and_ogg_are_the_same_as_in_source
