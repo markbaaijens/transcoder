@@ -137,23 +137,11 @@ function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags
     rm -f $ogg_file
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
 
-    flac_title_tag=$(metaflac "${flacs[0]}" --show-tag=TITLE)
-    ogg_title_tag=$(vorbiscomment -l "$ogg_file" | grep "TITLE")
-    echo "$flac_title_tag"
-    echo "$ogg_title_tag"
+    flac_title_tag=$(metaflac "${flacs[0]}" --show-tag=TITLE | cut -d"=" -f 2)
+    ogg_title_tag=$(vorbiscomment -l "$ogg_file" | grep "TITLE" | cut -d"=" -f 2)
+    mp3_title_tag=$(ffprobe "$mp3_file" -show_entries format_tags=title -of compact=p=0:nk=1 -v 0)
     if [[ "$flac_title_tag" == "$ogg_title_tag" ]]; then echo "OK"; else echo "Fail"; fi
-#    metaflac --export-tags-to=flac-tags.txt "${flacs[0]}"
-#    echo "FLAC"
-#    echo $(cat flac-tags.txt)
-#    echo "MP3"
-    # id3v2: No ID3 tag
-#    echo $(ffprobe "$mp3_file") >> mp3_tags.txt
-#    mp3_tags=$(cat mp3_tags.txt)
-#    mp3_tags=${mp3_tags#*metadata}
-#    echo ${mp3_tags%duration*}
-#    echo "OGG"
-#    ogg_tags=$(vorbiscomment -l "$ogg_file")
-#    echo ${ogg_tags%metadata*}
+    if [[ "$flac_title_tag" == "$mp3_title_tag" ]]; then echo "OK"; else echo "Fail"; fi
 }
 
 root="./files"
