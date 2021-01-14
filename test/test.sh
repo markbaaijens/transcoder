@@ -170,6 +170,22 @@ function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags
     if [[ $failure == 0 ]]; then echo "(tags) OK"; else echo "(tags) Fail"; fi
 }
 
+function given_all_files_when_delete_cover_art_from_a_lossy_tree_and_transcode_then_check_if_copied_cover_art_is_the_same_as_the_source
+{
+    echo "* ${FUNCNAME[0]}"
+    source="$root/flac"
+    python3 ../transcoder.py $source --mp3folder $root/mp3 --logfolder $root/
+    rm -f $root/$log_file
+
+    readarray -d '' images < <(find $source -type f -name "cover.jpg" -print0)
+    source_image="${images[0]}"
+    lossy_image=$(echo "$source_image" | sed -e "s/\/flac\//\/mp3\//g")
+    rm "$lossy_image"
+    python3 ../transcoder.py $source --mp3folder $root/mp3 --logfolder $root/
+
+    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$lossy_image" | cut -d" " -f 1) ]]; then echo "(checksum) OK"; else echo "(checksum) Fail"; fi
+}
+
 root="./files"
 log_file="transcoder.log"
 
@@ -182,3 +198,4 @@ given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
 given_all_files_when_delete_source_file_then_delete_lossy_file
 given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders
 given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags_in_mp3_and_ogg_are_the_same_as_in_source
+given_all_files_when_delete_cover_art_from_a_lossy_tree_and_transcode_then_check_if_copied_cover_art_is_the_same_as_the_source
