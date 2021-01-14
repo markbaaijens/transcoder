@@ -129,7 +129,6 @@ function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags
     rm -f $root/$log_file
 
     readarray -d '' flacs < <(find $source -type f -name "*.flac" -print0)
-    # To replace space with space-escape, add: -e "s/ /\\\\ /g"
     mp3_file=$(echo "${flacs[0]}" | sed -e "s/\/flac\//\/mp3\//g" -e "s/\.flac$/.mp3/g") 
     ogg_file=$(echo "${flacs[0]}" | sed -e "s/\/flac\//\/ogg\//g" -e "s/\.flac$/.ogg/g")
 
