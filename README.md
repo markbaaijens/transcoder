@@ -11,7 +11,6 @@ logging to a predefined logfolder.
 - python3
 
 ## Installation
-(install dependencies)<br/>
 `sudo apt install vorbis-tools  # oggenc`<br/> 
 `sudo apt install lame`<br/>
 `sudo apt install flac`<br/>
