@@ -12,8 +12,8 @@ function given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_lo
     rm -rf $destination/*
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
-    if cat $root/$log_file | grep -q "transcoded to mp3: $(find $source -type f -name "*.flac" | wc -l)"; then echo "(log) OK"; else echo "(log) Fail"; fi
-    if find $destination -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "(count) OK"; else echo "(count) Fail"; fi
+    if cat $root/$log_file | grep -q "transcoded to mp3: $(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (log) "; else echo "Fail (log)"; fi
+    if find $destination -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (count)"; else echo "OK (count)"; fi
 }
 
 function given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_ogg_filecount {
@@ -26,8 +26,8 @@ function given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_lo
     rm -rf $destination/*
     python3 ../transcoder.py $source --oggfolder $destination --logfolder $root/
     
-    if cat $root/$log_file | grep -q "transcoded to ogg: $(find $source -type f -name "*.flac" | wc -l)"; then echo "(log) OK"; else echo "(log) Fail"; fi
-    if find $destination -type f -name "*.ogg" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "(count) OK"; else echo "(count) Fail"; fi
+    if cat $root/$log_file | grep -q "transcoded to ogg: $(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (log)"; else echo "Fail (log)"; fi
+    if find $destination -type f -name "*.ogg" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (count)"; else echo "Fail (count)"; fi
 }
 
 function given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount {
@@ -42,8 +42,8 @@ function given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_log
 
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
     
-    if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
-    if find $destination -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "(count) OK"; else echo "(count) Fail"; fi
+    if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "OK (log)"; else echo "Fail (log)"; fi
+    if find $destination -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (count)"; else echo "Fail (count)"; fi
 }
 
 function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile {
@@ -59,7 +59,7 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
     searchstringlog=${image/$destination/"\- copying to \[mp3_tree\]"}
-    if cat $root/$log_file | grep -q "$searchstringlog"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "$searchstringlog"; then echo "OK (log)"; else echo "Fail (log)"; fi
 }
 
 function given_all_files_when_changed_to_newer_date_of_flac_then_retranscode {
@@ -73,7 +73,7 @@ function given_all_files_when_changed_to_newer_date_of_flac_then_retranscode {
     touch "${flacs[0]}"
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
-    if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "transcoded to mp3: 1"; then echo "OK (log)"; else echo "Fail (log)"; fi
 }
 
 function given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed {
@@ -88,8 +88,8 @@ function given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-
     touch "$image"
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
-    if cat $root/$log_file | grep -q "\- cover files copied: 1"; then echo "(log) OK"; else echo "(log) Fail"; fi
-    if cat $root/$log_file | grep -q "\- covers embedded in files: $(find "${image/"cover.jpg"/""}" -type f -name "*.flac" | wc -l)"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "\- cover files copied: 1"; then echo "OK (log)"; else echo "Fail (log)"; fi
+    if cat $root/$log_file | grep -q "\- covers embedded in files: $(find "${image/"cover.jpg"/""}" -type f -name "*.flac" | wc -l)"; then echo "OK (log)"; else echo "Fail (log)"; fi
 }
 
 function given_all_files_when_delete_source_file_then_delete_lossy_file {
@@ -102,9 +102,9 @@ function given_all_files_when_delete_source_file_then_delete_lossy_file {
     rm -rf "${flacs[0]}"
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
 
-    if find $root/mp3 -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "(count mp3) OK"; else echo "(count mp3) Fail"; fi
-    if find $root/ogg -type f -name "*.ogg" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "(count ogg) OK"; else echo "(count ogg) Fail"; fi
-    if cat $root/$log_file | grep -q "\- obsolete files deleted: 2"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if find $root/mp3 -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (count mp3)"; else echo "Fail (count mp3)"; fi
+    if find $root/ogg -type f -name "*.ogg" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (count ogg)"; else echo "Fail (count ogg)"; fi
+    if cat $root/$log_file | grep -q "\- obsolete files deleted: 2"; then echo "OK (log)"; else echo "Fail (log)"; fi
 }
 
 function given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders {
@@ -118,7 +118,7 @@ function given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_de
     mkdir $root/mp3/Temp3
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
 
-    if cat $root/$log_file | grep -q "\- empty folders deleted: 3"; then echo "(log) OK"; else echo "(log) Fail"; fi
+    if cat $root/$log_file | grep -q "\- empty folders deleted: 3"; then echo "OK (log)"; else echo "Fail (log)"; fi
 }
 
 function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags_in_mp3_and_ogg_are_the_same_as_in_source
@@ -167,7 +167,7 @@ function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags
     if [[ "$flac_tag" != "$ogg_tag" ]]; then failure=1; fi
     if [[ "$flac_tag" != "$mp3_tag" ]]; then failure=1; fi
 
-    if [[ $failure == 0 ]]; then echo "(tags) OK"; else echo "(tags) Fail"; fi
+    if [[ $failure == 0 ]]; then echo "OK (tags)"; else echo "Fail (tags)"; fi
 }
 
 function given_all_files_when_delete_cover_art_from_a_lossy_tree_and_transcode_then_check_if_copied_cover_art_is_the_same_as_the_source
@@ -183,7 +183,7 @@ function given_all_files_when_delete_cover_art_from_a_lossy_tree_and_transcode_t
     rm "$lossy_image"
     python3 ../transcoder.py $source --mp3folder $root/mp3 --logfolder $root/
 
-    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$lossy_image" | cut -d" " -f 1) ]]; then echo "(checksum) OK"; else echo "(checksum) Fail"; fi
+    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$lossy_image" | cut -d" " -f 1) ]]; then echo "OK (checksum)"; else echo "Fail (checksum)"; fi
 }
 
 root="./files"
