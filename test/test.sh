@@ -186,16 +186,38 @@ function given_all_files_when_delete_cover_art_from_a_lossy_tree_and_transcode_t
     if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$lossy_image" | cut -d" " -f 1) ]]; then echo "(checksum) OK"; else echo "(checksum) Fail"; fi
 }
 
+function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_copied_album_art_is_actually_embedded_in_the_music_file
+{
+    echo "* ${FUNCNAME[0]}"
+    source="$root/flac"
+    destination="$root/mp3"
+
+    readarray -d '' mp3s < <(find $destination -type f -name "*.mp3" -print0)
+    mp3_file="${mp3s[0]}"
+    rm "$mp3_file"
+
+    python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
+
+    source_dir=$(echo "$mp3_file" | sed -e "s/\/mp3\//\/flac\//g" | rev | cut -d"/" -f2- | rev)
+    source_image="$source_dir/cover.jpg"
+
+    echo "$source_image"
+#    ffmpeg -i $mp3_file "$source_dir/output.jpg"
+
+#    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$source_dir"/output.jpg | cut -d" " -f 1) ]]; then echo "(embedded) OK"; then echo "(embedded) Fail"; fi
+}
+
 root="./files"
 log_file="transcoder.log"
 
-given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and_mp3_filecount
-given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_ogg_filecount
-given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount
-given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
-given_all_files_when_changed_to_newer_date_of_flac_then_retranscode
-given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
-given_all_files_when_delete_source_file_then_delete_lossy_file
-given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders
-given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags_in_mp3_and_ogg_are_the_same_as_in_source
-given_all_files_when_delete_cover_art_from_a_lossy_tree_and_transcode_then_check_if_copied_cover_art_is_the_same_as_the_source
+#given_all_files_when_remove_all_mp3-files_and_transcode_then_correct_logfile_and_mp3_filecount
+#given_all_files_when_remove_all_ogg-files_and_transcode_then_correct_logfile_and_ogg_filecount
+#given_all_files_when_remove_one_mp3-file_and_transcode_then_correct_logfile_and_mp3_filecount
+#given_all_files_when_remove_cover-file_and_transcode_then_correct_logfile
+#given_all_files_when_changed_to_newer_date_of_flac_then_retranscode
+#given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-embed
+#given_all_files_when_delete_source_file_then_delete_lossy_file
+#given_all_files_when_create_folders_in_lossy_tree_and_transcode_then_delete_lossy_folders
+#given_all_files_when_delete_lossy_file_and_transcode_then_check_if_tags_in_mp3_and_ogg_are_the_same_as_in_source
+#given_all_files_when_delete_cover_art_from_a_lossy_tree_and_transcode_then_check_if_copied_cover_art_is_the_same_as_the_source
+given_all_files_when_delete_lossy_file_and_transcode_then_check_if_copied_album_art_is_actually_embedded_in_the_music_file
