@@ -11,7 +11,6 @@ logging to a predefined logfolder.
 - python3
 
 ## Installation
-(install dependencies)<br/>
 `sudo apt install vorbis-tools  # oggenc`<br/> 
 `sudo apt install lame`<br/>
 `sudo apt install flac`<br/>
@@ -24,6 +23,9 @@ logging to a predefined logfolder.
 ## Usage
 `python3 transcoder.py --help`<br/>
 (using python3 as a prefix is optional, ./transcoder.py also works)
+
+## Tools needed for testing
+`sudo apt install ffmpeg`<br/> 
 
 ## Example(s)
 `python3 transcoder.py --verbose <music folder>/flac --mp3folder <music folder>/mp3 --logfolder .`<br/>
