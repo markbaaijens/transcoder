@@ -26,7 +26,6 @@ logging to a predefined logfolder.
 (using python3 as a prefix is optional, ./transcoder.py also works)
 
 ## Tools needed for testing
-(install dependencies)<br/>
 `sudo apt install ffmpeg`<br/> 
 
 ## Example(s)
