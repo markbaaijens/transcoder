@@ -25,6 +25,10 @@ logging to a predefined logfolder.
 `python3 transcoder.py --help`<br/>
 (using python3 as a prefix is optional, ./transcoder.py also works)
 
+## Tools needed for testing
+(install dependencies)<br/>
+`sudo apt install ffmpeg`<br/> 
+
 ## Example(s)
 `python3 transcoder.py --verbose <music folder>/flac --mp3folder <music folder>/mp3 --logfolder .`<br/>
 show output to console, transcoding to mp3 (default to 128 kbs), log to current folder
