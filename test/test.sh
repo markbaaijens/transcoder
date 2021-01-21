@@ -202,9 +202,9 @@ function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_copi
     source_image="$source_dir/cover.jpg"
 
     echo "$source_image"
-#    ffmpeg -i $mp3_file "$source_dir/output.jpg"
+    ffmpeg -i "$mp3_file" "$source_dir/output.jpg" -y
 
-#    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$source_dir"/output.jpg | cut -d" " -f 1) ]]; then echo "(embedded) OK"; then echo "(embedded) Fail"; fi
+    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$source_dir"/output.jpg | cut -d" " -f 1) ]]; then echo "(embedded) OK"; else echo "(embedded) Fail"; fi
 }
 
 root="./files"
