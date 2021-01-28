@@ -198,13 +198,10 @@ function given_all_files_when_delete_lossy_file_and_transcode_then_check_if_copi
 
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
-    source_dir=$(echo "$mp3_file" | sed -e "s/\/mp3\//\/flac\//g" | rev | cut -d"/" -f2- | rev)
-    source_image="$source_dir/cover.jpg"
-
     echo "$source_image"
-    ffmpeg -i "$mp3_file" "$source_dir/output.jpg" -y
+    ffmpeg -i "$mp3_file" "$source_dir/output.jpg" -y > /dev/null 2>&1
 
-    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$source_dir"/output.jpg | cut -d" " -f 1) ]]; then echo "(embedded) OK"; else echo "(embedded) Fail"; fi
+#    if [[ $(md5sum "$source_image" | cut -d" " -f 1) == $(md5sum "$source_dir"/output.jpg | cut -d" " -f 1) ]]; then echo "(embedded) OK"; else echo "(embedded) Fail"; fi
 }
 
 root="./files"
