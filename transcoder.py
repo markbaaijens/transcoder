@@ -425,8 +425,10 @@ def cleanupLossyTree(lossyTree, lossyFormat):
 def removeEmptyDirectories(tree):
 
   # Remove empty directories
-  for dir, dirnames, fileNames in os.walk(tree, topdown=False):
-    if len(dirnames) == 0 and len(fileNames) == 0:
+  for dir, dirNames, fileNames in os.walk(tree, topdown=False):
+    dirNames.sort()
+    
+    if len(dirNames) == 0 and len(fileNames) == 0:
       if dir != tree:  # Never remove the top dir!   
         if dry_run == 0:
           os.rmdir(dir)
@@ -448,6 +450,7 @@ def transCodeFiles():
 
   for dir, dirNames, fileNames in os.walk(source_tree):
     dirNames.sort()
+
     for fileName in sorted(fileNames):
       sourceFileFullPathName = os.path.join(dir, fileName)
       if fnmatch(sourceFileFullPathName, "*.flac"):
@@ -467,6 +470,7 @@ def copyCoverFiles(lossyTree):
   log('Copy cover files to lossy tree: ' + lossyTree)
   for dir, dirNames, fileNames in os.walk(source_tree):
     dirNames.sort()
+
     for fileName in sorted(fileNames):
       sourceCoverFullFileName = os.path.join(dir, fileName)
       if fnmatch(sourceCoverFullFileName, "*/cover.jpg"):
