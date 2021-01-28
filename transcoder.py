@@ -379,8 +379,10 @@ def cleanupLossyTree(lossyTree, lossyFormat):
   log('Cleanup ' + lossyTree) 
   global obsolete_files_deleted_count 
 
-  for dir, dirNames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown       
-    for fileName in fileNames:
+  for dir, dirNames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown
+    dirNames.sort()
+
+    for fileName in sorted(fileNames):
       # Check for transcoded files
       if fnmatch(fileName, '*.' + lossyFormat): # We have a transcoded file          
         lossyFile = os.path.join(dir, fileName) # The full pathname of the lossy file
@@ -444,7 +446,8 @@ def transCodeFiles():
     log('- no transcoding to ogg or mp3 is set; nothing to do')
     return
 
-  for dir, dirnames, fileNames in os.walk(source_tree):
+  for dir, dirNames, fileNames in os.walk(source_tree):
+    dirNames.sort()
     for fileName in sorted(fileNames):
       sourceFileFullPathName = os.path.join(dir, fileName)
       if fnmatch(sourceFileFullPathName, "*.flac"):
@@ -462,7 +465,8 @@ def copyCoverFiles(lossyTree):
   from math import trunc 
   
   log('Copy cover files to lossy tree: ' + lossyTree)
-  for dir, dirnames, fileNames in os.walk(source_tree):
+  for dir, dirNames, fileNames in os.walk(source_tree):
+    dirNames.sort()
     for fileName in sorted(fileNames):
       sourceCoverFullFileName = os.path.join(dir, fileName)
       if fnmatch(sourceCoverFullFileName, "*/cover.jpg"):
@@ -497,7 +501,7 @@ def copyCoverFiles(lossyTree):
 
             global cover_embedded_count
             # Embed image in each audio file in the current dir
-            for fileName in os.listdir(outputFileBaseDir):
+            for fileName in sorted(os.listdir(outputFileBaseDir)):
                 lossyFileFullFileName = os.path.join(outputFileBaseDir,  fileName)  
                 if os.path.splitext(fileName)[1] ==  '.' + CONST_MP3:
                     updateCoverMp3(lossyFileFullFileName, sourceCoverFullFileName)
