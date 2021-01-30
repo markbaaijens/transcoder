@@ -24,13 +24,13 @@ constMp3 = 'mp3'
 constOgg = 'ogg'
 constLogFileName = 'transcoder.log'
 
-def logFileName():
+def LogFileName():
     logFileName = ''
     if (logDir != ''):
         logFileName = os.path.join(logDir,  constLogFileName)
     return logFileName
 
-def log(logText, raw=False, forceConsole=False):
+def Log(logText, raw=False, forceConsole=False):
   #
   # Log to a predefined log file.
   #
@@ -52,8 +52,8 @@ def log(logText, raw=False, forceConsole=False):
         logText = logText.replace(sourceTree, '[source_tree]')
 
   # Do not log to a file when log_dir is not defined
-  if (logFileName() != ''):
-    outputFile = open(logFileName(), 'a')
+  if (LogFileName() != ''):
+    outputFile = open(LogFileName(), 'a')
     outputFile.write(time.strftime('%Y-%m-%d %H:%M:%S') + ' ' + logText + '\n' )
     outputFile.close()
 
@@ -63,7 +63,7 @@ def log(logText, raw=False, forceConsole=False):
     
   return
 
-def transCodeFileCheck(inputFile):
+def TransCodeFileCheck(inputFile):
   #
   # Check if given file must be transcoded or tags must be copied
   #
@@ -76,11 +76,11 @@ def transCodeFileCheck(inputFile):
     
     # Check if outputFile exists
     if not os.path.exists(outputFile):
-      transCodeFile(inputFile, outputFile, constOgg)          
+      TransCodeFile(inputFile, outputFile, constOgg)          
     else:  # Outputfile exists
       # Check if inputFile (flac) is newer than the file to be encoded
       if os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
-        transCodeFile(inputFile, outputFile, constOgg)
+        TransCodeFile(inputFile, outputFile, constOgg)
         
   if mp3Encoding == 1:    
     outputFile = os.path.splitext(inputFile)[0] + '.' + constMp3  # Change extension
@@ -88,15 +88,15 @@ def transCodeFileCheck(inputFile):
 
     # Check if outputFile exists
     if not os.path.exists(outputFile):
-      transCodeFile(inputFile, outputFile, constMp3)      
+      TransCodeFile(inputFile, outputFile, constMp3)      
     else:  # outputFile exists
       # Check if inputFile (flac) is newer than the file to be encoded
       if os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
-        transCodeFile(inputFile, outputFile, constMp3) 
+        TransCodeFile(inputFile, outputFile, constMp3) 
         
   return
 
-def transCodeFile(inputFile, outputFile, transcodeFormat): 
+def TransCodeFile(inputFile, outputFile, transcodeFormat): 
   #
   # Transcodes a file. Folder structure will be copied from the lossless (flac) tree.
   # In the end, the lossy tree(s) is indentical to the lossless tree.
@@ -105,7 +105,7 @@ def transCodeFile(inputFile, outputFile, transcodeFormat):
   # Output is redirected to the target-tree.
   # Folder structure will be copied from the source-tree
 
-  log('- transcoding file: "' + inputFile + '" to ' + transcodeFormat)
+  Log('- transcoding file: "' + inputFile + '" to ' + transcodeFormat)
 
   if dryRun == 0:
 
@@ -117,18 +117,18 @@ def transCodeFile(inputFile, outputFile, transcodeFormat):
 
     # For oggvorbis-encoding
     if transcodeFormat == constOgg:  
-        transCodeFileOgg(inputFile, outputFile)    
+        TransCodeFileOgg(inputFile, outputFile)    
 
     # For mp3-encoding
     if transcodeFormat == constMp3:
-        transCodeFileMp3(inputFile, outputFile)
+        TransCodeFileMp3(inputFile, outputFile)
 
     if os.path.exists(outputFilebasedir + "/cover.jpg"):
         os.remove(outputFilebasedir + "/cover.jpg")
     
   return
     
-def transCodeFileOgg(inputFile, outputFile): 
+def TransCodeFileOgg(inputFile, outputFile): 
     #
     # Transcodes a file to ogg
     #
@@ -149,8 +149,8 @@ def transCodeFileOgg(inputFile, outputFile):
     p = subprocess.Popen(["nice", "oggenc", inputFile, "-Q", "-q" + str(oggQuality), "-o" + tempOggFile], stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
     output = p.communicate()[1]
     if p.returncode != 0:
-        log('- an error occured during transcoding')
-        log('=>' + output) 
+        Log('- an error occured during transcoding')
+        Log('=>' + output) 
 
     # Now we are ready with transcoding; copy to file to the desired output directory
     copyfile(tempOggFile, outputFile) 
@@ -163,7 +163,7 @@ def transCodeFileOgg(inputFile, outputFile):
 
     return
     
-def transCodeFileMp3(inputFile, outputFile): 
+def TransCodeFileMp3(inputFile, outputFile): 
     #
     # Transcodes a file to mp3
     #
@@ -184,8 +184,8 @@ def transCodeFileMp3(inputFile, outputFile):
     p = subprocess.Popen(["nice", "flac", "-s", "-d", "-f", inputFile, '-o', tempWavFile], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = p.communicate()[1]
     if p.returncode != 0:
-      log('- an error occured during decoding to .wav')
-      log('=>' + output) 
+      Log('- an error occured during decoding to .wav')
+      Log('=>' + output) 
 
     # Determine name of a *local* temporary MP3-file; this makes it easier for
     # rights management (Popen is suspect to be critical about this)
@@ -201,8 +201,8 @@ def transCodeFileMp3(inputFile, outputFile):
     p = subprocess.Popen(["nice", "lame", "-f", "--silent", "--noreplaygain", "--id3v2-only", "-b" + str(mp3Bitrate), "--tt",  "dummy", tempWavFile, tempMP3File], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = p.communicate()[1]
     if p.returncode != 0:
-      log('- an error occured during transcoding')
-      log('=>' + output) 
+      Log('- an error occured during transcoding')
+      Log('=>' + output) 
 
     # Because the input flac file is decoded to wav, all metadata is lost.
     # We have to extract this metadata from the original flac file and
@@ -210,7 +210,7 @@ def transCodeFileMp3(inputFile, outputFile):
     # We do this by calling copyTagsToTranscodedFileMp3 to copy all tags from the
     # flac file to the mp3 file. This can only be done if the mp3 file has a valid
     # id3 header. We can force this by adding a dummy tt argument (--tt dummy) during encoding.  
-    copyTagsToTranscodedFileMp3(inputFile, tempMP3File)
+    CopyTagsToTranscodedFileMp3(inputFile, tempMP3File)
 
     # Now we are ready with transcoding; copy to file to the desired output directory
     copyfile(tempMP3File, outputFile) 
@@ -224,7 +224,7 @@ def transCodeFileMp3(inputFile, outputFile):
  
     return
 
-def copyTagsToTranscodedFileMp3(losslessFile, lossyFile):  
+def CopyTagsToTranscodedFileMp3(losslessFile, lossyFile):  
   #
   # Copy the tags from the losslessFile (.flac) to the lossyFile.
   # All previous tags from the lossyFile will be deleted before the
@@ -372,11 +372,11 @@ def copyTagsToTranscodedFileMp3(losslessFile, lossyFile):
     
   return
 
-def cleanupLossyTree(lossyTree, lossyFormat):
+def CleanUpLossyTree(lossyTree, lossyFormat):
   #
   # Remove unwanted files in the losst tree 
   #
-  log('Cleanup ' + lossyTree) 
+  Log('Cleanup ' + lossyTree) 
   global obsoleteFilesDeletedCount 
 
   for dir, dirNames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown
@@ -396,7 +396,7 @@ def cleanupLossyTree(lossyTree, lossyFormat):
         if not os.path.isfile(sourceFile):                              
           if dryRun == 0:
             os.remove(lossyFile)
-          log('- file deleted: ' + lossyFile)
+          Log('- file deleted: ' + lossyFile)
           obsoleteFilesDeletedCount  += 1
       else: # Found a file but not a transcoded one
         # Check for transcoded files
@@ -411,18 +411,18 @@ def cleanupLossyTree(lossyTree, lossyFormat):
           if not os.path.isfile(sourceFile):                              
             if dryRun == 0:
               os.remove(lossyFile)
-            log('- file deleted: ' + lossyFile)
+            Log('- file deleted: ' + lossyFile)
             obsoleteFilesDeletedCount  += 1
 
   # Remove empty directories, first the child directories
-  removeEmptyDirectories(lossyTree)
+  RemoveEmptyDirectories(lossyTree)
 
   # Do it twice to also remove empty parent directories
-  removeEmptyDirectories(lossyTree)
+  RemoveEmptyDirectories(lossyTree)
 
   return
 
-def removeEmptyDirectories(tree):
+def RemoveEmptyDirectories(tree):
 
   # Remove empty directories
   for dir, dirNames, fileNames in os.walk(tree, topdown=False):
@@ -432,20 +432,20 @@ def removeEmptyDirectories(tree):
       if dir != tree:  # Never remove the top dir!   
         if dryRun == 0:
           os.rmdir(dir)
-        log('- directory removed: ' + dir) 
+        Log('- directory removed: ' + dir) 
         global emptyFoldersDeletedCount
         emptyFoldersDeletedCount +=1
 
   return
 
-def transCodeFiles():
+def TransCodeFiles():
   #
   # Transcode all files; wrapper for transCodeFile()
   #
-  log('Transcode files')
+  Log('Transcode files')
 
   if (oggEncoding == 0 and mp3Encoding == 0):
-    log('- no transcoding to ogg or mp3 is set; nothing to do')
+    Log('- no transcoding to ogg or mp3 is set; nothing to do')
     return
 
   for dir, dirNames, fileNames in os.walk(sourceTree):
@@ -456,18 +456,18 @@ def transCodeFiles():
       if fnmatch(sourceFileFullPathName, "*.flac"):
         global flacsScannedCount
         flacsScannedCount += 1
-        transCodeFileCheck(sourceFileFullPathName)  
+        TransCodeFileCheck(sourceFileFullPathName)  
 
   return
 
-def copyCoverFiles(lossyTree):
+def CopyCoverFiles(lossyTree):
   #
   # Copy cover files from flac- to lossy-tree(s); embed album art into transcoded file
   #
   from shutil import copyfile # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
   from math import trunc 
   
-  log('Copy cover files to lossy tree: ' + lossyTree)
+  Log('Copy cover files to lossy tree: ' + lossyTree)
   for dir, dirNames, fileNames in os.walk(sourceTree):
     dirNames.sort()
 
@@ -488,7 +488,7 @@ def copyCoverFiles(lossyTree):
             copyFile = True
 
         if copyFile:
-          log('- copying to ' + lossyCoverFullFileName) 
+          Log('- copying to ' + lossyCoverFullFileName) 
           global coverFilesCopiedCount
           coverFilesCopiedCount += 1
 
@@ -508,14 +508,14 @@ def copyCoverFiles(lossyTree):
             for fileName in sorted(os.listdir(outputFileBaseDir)):
                 lossyFileFullFileName = os.path.join(outputFileBaseDir,  fileName)  
                 if os.path.splitext(fileName)[1] ==  '.' + constMp3:
-                    updateCoverMp3(lossyFileFullFileName, sourceCoverFullFileName)
+                    UpdateCoverMp3(lossyFileFullFileName, sourceCoverFullFileName)
                     coverEmbeddedCount += 1
                 if os.path.splitext(fileName)[1] == '.' + constOgg:
-                    updateCoverOgg(lossyFileFullFileName, sourceCoverFullFileName)                    
+                    UpdateCoverOgg(lossyFileFullFileName, sourceCoverFullFileName)                    
                     coverEmbeddedCount += 1
   return  
 
-def updateCoverMp3(lossyFileName, artworkFileName):   
+def UpdateCoverMp3(lossyFileName, artworkFileName):   
     #
     # Embed album art into transcoded file: MP3
     #
@@ -523,7 +523,7 @@ def updateCoverMp3(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
 
-    log('- embedding album art in ' + lossyFileName) 
+    Log('- embedding album art in ' + lossyFileName) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.mp3'
@@ -545,7 +545,7 @@ def updateCoverMp3(lossyFileName, artworkFileName):
 
     return
 
-def updateCoverOgg(lossyFileName, artworkFileName):   
+def UpdateCoverOgg(lossyFileName, artworkFileName):   
     #
     # Embed album art into transcoded file: OGG
     #
@@ -554,7 +554,7 @@ def updateCoverOgg(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
     
-    log('- embedding album art in ' + lossyFileName) 
+    Log('- embedding album art in ' + lossyFileName) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.ogg'
@@ -587,7 +587,7 @@ def updateCoverOgg(lossyFileName, artworkFileName):
     
     return
 
-def sanitizeFileName(fileName):
+def SanitizeFileName(fileName):
     # Check if the last character is a trailing / or \
     if (fileName[-1:] in ['/', '\\']):
         fileName = fileName[:-1]  # Strip the last character
@@ -627,25 +627,25 @@ args = parser.parse_args()
 # Pass command line argument(s) to setting variable(s)
 showVerbose = args.verbose
 dryRun = args.dry_run
-sourceTree = sanitizeFileName(args.sourcefolder)
+sourceTree = SanitizeFileName(args.sourcefolder)
 
 # --logfolder is optional
 if (args.logfolder != None) :
     if (args.logfolder[0] != ''):
         logDir = args.logfolder[0]
-logDir = sanitizeFileName(logDir)   
+logDir = SanitizeFileName(logDir)   
 
 # --mp3folder is optional
 if (args.mp3folder != None) :
     if (args.mp3folder[0] != ''):
         mp3Tree = args.mp3folder[0]
-mp3Tree = sanitizeFileName(mp3Tree)
+mp3Tree = SanitizeFileName(mp3Tree)
 
 # --oggfolder is optional
 if (args.oggfolder != None) :
     if (args.oggfolder[0] != ''):
         oggTree = args.oggfolder[0]
-oggTree = sanitizeFileName(oggTree)
+oggTree = SanitizeFileName(oggTree)
         
 # --oggquality is optional
 if (args.oggquality != None) :
@@ -677,23 +677,23 @@ if (logDir != ''):
 # Check if file trees are valid
 if (sourceTree != ''):
   if not os.path.exists(sourceTree):
-    log('Location of source_tree = ' + sourceTree + ' is not valid. Abort.', True, True)
+    Log('Location of source_tree = ' + sourceTree + ' is not valid. Abort.', True, True)
     sys.exit(1)
 
 if oggEncoding == 1:
   if not os.path.exists(oggTree):
-    log('Location of ogg_tree = ' + oggTree + ' is not valid. Abort.', True, True)
+    Log('Location of ogg_tree = ' + oggTree + ' is not valid. Abort.', True, True)
     sys.exit(1)
 
 if mp3Encoding == 1:
   if not os.path.exists(mp3Tree):
-    log('Location of mp3_tree = ' + mp3Tree + ' is not valid. Abort.', True, True)
+    Log('Location of mp3_tree = ' + mp3Tree + ' is not valid. Abort.', True, True)
     sys.exit(1)
 
 # Check via existence of a lockfile, if there's another process running; if so, bail out...
 lockfile = '/tmp/transcoder.lock'
 if os.path.exists(lockfile):
-  log('Starting transcoder. But another process is still running, lockfile found ("rm ' + lockfile + '" to continue). Abort.', True, True)
+  Log('Starting transcoder. But another process is still running, lockfile found ("rm ' + lockfile + '" to continue). Abort.', True, True)
   sys.exit(1)
 
 # Remove lockfile on exit, even when the user hits Crtl+C
@@ -710,58 +710,58 @@ if (logDir == '') and (not showVerbose):
   print('Hint: to monitor progress, use --verbose or --logfolder (or both)')
 
 # Start logging
-log('Start session')
+Log('Start session')
 
-log('- source_tree: ' + sourceTree, True)
-log('- dry_run: ' + str(dryRun))
-log('- show_verbose: ' + str(showVerbose))
+Log('- source_tree: ' + sourceTree, True)
+Log('- dry_run: ' + str(dryRun))
+Log('- show_verbose: ' + str(showVerbose))
 
 logText = '- ogg_tree: ' + oggTree
 if (oggTree == ''):
     logText += '(empty) => no transcoding'
-log(logText, True)
+Log(logText, True)
 if (oggTree != ''):
-    log('- ogg_quality: ' + str(oggQuality))
+    Log('- ogg_quality: ' + str(oggQuality))
 
 logText = '- mp3_tree: ' + mp3Tree
 if (mp3Tree == ''):
     logText += '(empty) => no transcoding'
-log(logText, True)
+Log(logText, True)
 if (mp3Tree != ''):
-    log('- mp3_bitrate: ' + str(mp3Bitrate))
+    Log('- mp3_bitrate: ' + str(mp3Bitrate))
 
-logText = '- logging to: ' + logFileName()
-if (logFileName() == ''):
+logText = '- logging to: ' + LogFileName()
+if (LogFileName() == ''):
     logText += '(empty) => no logging'
-log(logText)    
+Log(logText)    
 
 # Scan all files in source_tree, check every individual file if it needs
 # transcoding or tag synchronizing.
-transCodeFiles()
+TransCodeFiles()
       
 # Copy all cover files to the lossy tree(s)
 if oggEncoding == 1:
-  copyCoverFiles(oggTree)
+  CopyCoverFiles(oggTree)
 if mp3Encoding == 1:
-  copyCoverFiles(mp3Tree)
+  CopyCoverFiles(mp3Tree)
 
 # Scan all files in lossy trees. Delete or remove them if there is no
 # corresponding flac file
 if oggEncoding == 1:
-  cleanupLossyTree(oggTree, constOgg)
+  CleanUpLossyTree(oggTree, constOgg)
 if mp3Encoding == 1:
-  cleanupLossyTree(mp3Tree, constMp3)
+  CleanUpLossyTree(mp3Tree, constMp3)
 
 # Show summary
-log('Summary')
-log('- flacs scanned: ' + str(flacsScannedCount))
-log('- transcoded to mp3: ' + str(mp3TranscodedCount))
-log('- transcoded to ogg: ' + str(oggTranscodedCount))
-log('- cover files copied: ' + str(coverFilesCopiedCount))
-log('- covers embedded in files: ' + str(coverEmbeddedCount))
-log('- obsolete files deleted: ' + str(obsoleteFilesDeletedCount))
-log('- empty folders deleted: ' + str(emptyFoldersDeletedCount))
+Log('Summary')
+Log('- flacs scanned: ' + str(flacsScannedCount))
+Log('- transcoded to mp3: ' + str(mp3TranscodedCount))
+Log('- transcoded to ogg: ' + str(oggTranscodedCount))
+Log('- cover files copied: ' + str(coverFilesCopiedCount))
+Log('- covers embedded in files: ' + str(coverEmbeddedCount))
+Log('- obsolete files deleted: ' + str(obsoleteFilesDeletedCount))
+Log('- empty folders deleted: ' + str(emptyFoldersDeletedCount))
 
 # Stop logging
-log('End session')
+Log('End session')
 sys.exit(0)
