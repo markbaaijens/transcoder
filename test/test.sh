@@ -58,8 +58,7 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
     rm -rf "$image"
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
-    searchstringlog=${image/$destination/"\- copying to "}
-    if cat $root/$log_file | grep -q "$searchstringlog"; then echo "OK (log)"; else echo "Fail (log)"; fi
+    if cat $root/$log_file | grep -q "\- copying to $image"; then echo "OK (log)"; else echo "Fail (log)"; fi
 }
 
 function given_all_files_when_changed_to_newer_date_of_flac_then_retranscode {
