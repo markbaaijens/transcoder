@@ -25,31 +25,30 @@ constOgg = 'ogg'
 constLogFileName = 'transcoder.log'
 
 def LogFileName():
-    logFileName = ''
-    if (logDir != ''):
-        logFileName = os.path.join(logDir,  constLogFileName)
-    return logFileName
+  logFileName = ''
+  if (logDir != ''):
+      logFileName = os.path.join(logDir,  constLogFileName)
 
-def Log(logText, raw=False, forceConsole=False):
+  return logFileName
+
+def CompactPathName(pathName):
+  if (oggTree != '') and (oggTree in pathName):
+    pathName = pathName.replace(oggTree, '[ogg_tree]')
+
+  if (mp3Tree != '') and (mp3Tree in pathName):
+    pathName = pathName.replace(mp3Tree, '[mp3_tree]')
+  
+  if (sourceTree != '') and (sourceTree in pathName):
+    pathName = pathName.replace(sourceTree, '[source_tree]')
+
+  return pathName
+
+def Log(logText, forceConsole=False):
   #
   # Log to a predefined log file.
   #
   if dryRun == 1:
     logText = '(dry-run) ' + logText
-
-  # More compact logging: replace fulldirs with [source_tree], [mp3_tree] and [ogg_tree]
-  if not raw:
-    if oggTree != '':
-      if oggTree in logText:
-        logText = logText.replace(oggTree, '[ogg_tree]')
-
-    if mp3Tree != '':
-      if mp3Tree in logText:
-        logText = logText.replace(mp3Tree, '[mp3_tree]')
-    
-    if sourceTree != '':  # This replacement must be last to prevent double replacements
-      if sourceTree in logText:
-        logText = logText.replace(sourceTree, '[source_tree]')
 
   # Do not log to a file when log_dir is not defined
   if (LogFileName() != ''):
@@ -84,14 +83,14 @@ def TransCodeFile(inputFile, outputFile, transcodeFormat):
 
     # For oggvorbis-encoding
     if transcodeFormat == constOgg:  
-        TransCodeFileOgg(inputFile, outputFile)    
+      TransCodeFileOgg(inputFile, outputFile)    
 
     # For mp3-encoding
     if transcodeFormat == constMp3:
-        TransCodeFileMp3(inputFile, outputFile)
+      TransCodeFileMp3(inputFile, outputFile)
 
     if os.path.exists(outputFilebasedir + "/cover.jpg"):
-        os.remove(outputFilebasedir + "/cover.jpg")
+      os.remove(outputFilebasedir + "/cover.jpg")
     
   return
     
@@ -116,8 +115,8 @@ def TransCodeFileOgg(inputFile, outputFile):
     p = subprocess.Popen(["nice", "oggenc", inputFile, "-Q", "-q" + str(oggQuality), "-o" + tempOggFile], stdout=subprocess.PIPE,  stderr=subprocess.PIPE)
     output = p.communicate()[1]
     if p.returncode != 0:
-        Log('- an error occured during transcoding')
-        Log('=>' + output) 
+      Log('- an error occured during transcoding')
+      Log('=>' + output) 
 
     # Now we are ready with transcoding; copy to file to the desired output directory
     copyfile(tempOggFile, outputFile) 
@@ -614,32 +613,27 @@ dryRun = args.dry_run
 sourceTree = SanitizeFileName(args.sourcefolder)
 
 # --logfolder is optional
-if (args.logfolder != None) :
-    if (args.logfolder[0] != ''):
-        logDir = args.logfolder[0]
+if (args.logfolder != None) and (args.logfolder[0] != ''):
+  logDir = args.logfolder[0]
 logDir = SanitizeFileName(logDir)   
 
 # --mp3folder is optional
-if (args.mp3folder != None) :
-    if (args.mp3folder[0] != ''):
-        mp3Tree = args.mp3folder[0]
+if (args.mp3folder != None) and (args.mp3folder[0] != ''):
+  mp3Tree = args.mp3folder[0]
 mp3Tree = SanitizeFileName(mp3Tree)
 
 # --oggfolder is optional
-if (args.oggfolder != None) :
-    if (args.oggfolder[0] != ''):
-        oggTree = args.oggfolder[0]
+if (args.oggfolder != None) and (args.oggfolder[0] != ''):
+  oggTree = args.oggfolder[0]
 oggTree = SanitizeFileName(oggTree)
         
 # --oggquality is optional
-if (args.oggquality != None) :
-    if (args.oggquality[0] != ''):
-        oggQuality = args.oggquality[0]
+if (args.oggquality != None) and (args.oggquality[0] != ''):
+  oggQuality = args.oggquality[0]
 
 # --mp3bitrate is optional
-if (args.mp3bitrate != None) :
-    if (args.mp3bitrate[0] != ''):
-        mp3Bitrate = args.mp3bitrate[0]
+if (args.mp3bitrate != None) and (args.mp3bitrate[0] != ''):
+  mp3Bitrate = args.mp3bitrate[0]
 
 # Calculate derived variables
 oggEncoding = 0
@@ -651,33 +645,29 @@ if mp3Tree != '':
   mp3Encoding = 1
 
 # Check if log location is valid
-if (logDir != ''):
-  if not os.path.exists(logDir):
-    # When the logdir is invalid, we cannot write to a log obviously; so just print the 
-    # error to the console
-    print('Location of log_dir = ' + logDir + ' is not valid. Abort.')
-    sys.exit(1)
+if (logDir != '') and not os.path.exists(logDir):
+  # When the logdir is invalid, we cannot write to a log obviously; so just print the 
+  # error to the console
+  print('Location of log_dir = ' + logDir + ' is not valid. Abort.')
+  sys.exit(1)
 
 # Check if file trees are valid
-if (sourceTree != ''):
-  if not os.path.exists(sourceTree):
-    Log('Location of source_tree = ' + sourceTree + ' is not valid. Abort.', True, True)
-    sys.exit(1)
+if (sourceTree != '') and not os.path.exists(sourceTree):
+  Log('Location of source_tree = ' + CompactPathName(sourceTree) + ' is not valid. Abort.', True)
+  sys.exit(1)
 
-if oggEncoding == 1:
-  if not os.path.exists(oggTree):
-    Log('Location of ogg_tree = ' + oggTree + ' is not valid. Abort.', True, True)
-    sys.exit(1)
+if oggEncoding == 1 and not os.path.exists(oggTree):
+  Log('Location of ogg_tree = ' + CompactPathName(oggTree) + ' is not valid. Abort.', True)
+  sys.exit(1)
 
-if mp3Encoding == 1:
-  if not os.path.exists(mp3Tree):
-    Log('Location of mp3_tree = ' + mp3Tree + ' is not valid. Abort.', True, True)
-    sys.exit(1)
+if mp3Encoding == 1 and not os.path.exists(mp3Tree):
+  Log('Location of mp3_tree = ' + CompactPathName(mp3Tree) + ' is not valid. Abort.', True)
+  sys.exit(1)
 
 # Check via existence of a lockfile, if there's another process running; if so, bail out...
 lockfile = '/tmp/transcoder.lock'
 if os.path.exists(lockfile):
-  Log('Starting transcoder. But another process is still running, lockfile found ("rm ' + lockfile + '" to continue). Abort.', True, True)
+  Log('Starting transcoder. But another process is still running, lockfile found ("rm ' + CompactPathName(lockfile) + '" to continue). Abort.', True)
   sys.exit(1)
 
 # Remove lockfile on exit, even when the user hits Crtl+C
@@ -696,27 +686,27 @@ if (logDir == '') and (not showVerbose):
 # Start logging
 Log('Start session')
 
-Log('- source_tree: ' + sourceTree, True)
+Log('- source_tree: ' + CompactPathName(sourceTree))
 Log('- dry_run: ' + str(dryRun))
 Log('- show_verbose: ' + str(showVerbose))
 
-logText = '- ogg_tree: ' + oggTree
+logText = '- ogg_tree: '
 if (oggTree == ''):
-    logText += '(empty) => no transcoding'
-Log(logText, True)
-if (oggTree != ''):
-    Log('- ogg_quality: ' + str(oggQuality))
+  logText += '(empty) => no transcoding'
+else:
+  Log(logText + CompactPathName(oggTree))
+  Log('- ogg_quality: ' + str(oggQuality))
 
-logText = '- mp3_tree: ' + mp3Tree
+logText = '- mp3_tree: '
 if (mp3Tree == ''):
-    logText += '(empty) => no transcoding'
-Log(logText, True)
-if (mp3Tree != ''):
-    Log('- mp3_bitrate: ' + str(mp3Bitrate))
+  logText += '(empty) => no transcoding'
+else:
+  Log(logText + CompactPathName(mp3Tree))
+  Log('- mp3_bitrate: ' + str(mp3Bitrate))
 
 logText = '- logging to: ' + LogFileName()
 if (LogFileName() == ''):
-    logText += '(empty) => no logging'
+  logText += '(empty) => no logging'
 Log(logText)    
 
 # Scan all files in source_tree, check every individual file if it needs
