@@ -488,7 +488,7 @@ def copyCoverFiles(lossyTree):
             copyFile = True
 
         if copyFile:
-          log('- copying to ' + lossyCoverFullFileName) 
+          log('- copying cover file to ' + lossyCoverFullFileName) 
           global coverFilesCopiedCount
           coverFilesCopiedCount += 1
 
