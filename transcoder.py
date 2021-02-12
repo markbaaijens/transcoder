@@ -63,39 +63,6 @@ def Log(logText, raw=False, forceConsole=False):
     
   return
 
-def TransCodeFileCheck(inputFile):
-  #
-  # Check if given file must be transcoded or tags must be copied
-  #
-
-  # Compile directory and file name and do some checking for each 
-  # supported lossless transcode format.
-  if oggEncoding == 1:    
-    outputFile = os.path.splitext(inputFile)[0] + '.' + constOgg  # Change extension
-    outputFile = outputFile.replace(sourceTree, oggTree)         # Change root of file tree
-    
-    # Check if outputFile exists
-    if not os.path.exists(outputFile):
-      TransCodeFile(inputFile, outputFile, constOgg)          
-    else:  # Outputfile exists
-      # Check if inputFile (flac) is newer than the file to be encoded
-      if os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
-        TransCodeFile(inputFile, outputFile, constOgg)
-        
-  if mp3Encoding == 1:    
-    outputFile = os.path.splitext(inputFile)[0] + '.' + constMp3  # Change extension
-    outputFile = outputFile.replace(sourceTree, mp3Tree)         # Change root of file tree
-
-    # Check if outputFile exists
-    if not os.path.exists(outputFile):
-      TransCodeFile(inputFile, outputFile, constMp3)      
-    else:  # outputFile exists
-      # Check if inputFile (flac) is newer than the file to be encoded
-      if os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
-        TransCodeFile(inputFile, outputFile, constMp3) 
-        
-  return
-
 def TransCodeFile(inputFile, outputFile, transcodeFormat): 
   #
   # Transcodes a file. Folder structure will be copied from the lossless (flac) tree.
@@ -456,7 +423,25 @@ def TransCodeFiles():
       if fnmatch(sourceFileFullPathName, "*.flac"):
         global flacsScannedCount
         flacsScannedCount += 1
-        TransCodeFileCheck(sourceFileFullPathName)  
+
+        # Compile directory and file name and do some checking for each 
+        # supported lossless transcode format.
+        if oggEncoding == 1:    
+          outputFile = os.path.splitext(sourceFileFullPathName)[0] + '.' + constOgg  # Change extension
+          outputFile = outputFile.replace(sourceTree, oggTree)         # Change root of file tree
+          
+          # Check if outputFile exists
+          if not os.path.exists(outputFile) or os.path.getmtime(sourceFileFullPathName) > os.path.getmtime(outputFile):
+            TransCodeFile(sourceFileFullPathName, outputFile, constOgg)
+
+        if mp3Encoding == 1:    
+          outputFile = os.path.splitext(sourceFileFullPathName)[0] + '.' + constMp3  # Change extension
+          outputFile = outputFile.replace(sourceTree, mp3Tree)         # Change root of file tree
+
+          # Check if outputFile exists
+          if not os.path.exists(outputFile) or os.path.getmtime(sourceFileFullPathName) > os.path.getmtime(outputFile):
+            TransCodeFile(sourceFileFullPathName, outputFile, constMp3)      
+
 
   return
 
