@@ -75,24 +75,16 @@ def TransCodeFileCheck(inputFile):
     outputFile = outputFile.replace(sourceTree, oggTree)         # Change root of file tree
     
     # Check if outputFile exists
-    if not os.path.exists(outputFile):
+    if not os.path.exists(outputFile) or os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
       TransCodeFile(inputFile, outputFile, constOgg)
-    else:  # Outputfile exists
-      # Check if inputFile (flac) is newer than the file to be encoded
-      if os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
-        TransCodeFile(inputFile, outputFile, constOgg)
 
   if mp3Encoding == 1:    
     outputFile = os.path.splitext(inputFile)[0] + '.' + constMp3  # Change extension
     outputFile = outputFile.replace(sourceTree, mp3Tree)         # Change root of file tree
 
     # Check if outputFile exists
-    if not os.path.exists(outputFile):
-      TransCodeFile(inputFile, outputFile, constMp3)
-    else:  # outputFile exists
-      # Check if inputFile (flac) is newer than the file to be encoded
-      if os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
-        TransCodeFile(inputFile, outputFile, constMp3)      
+    if not os.path.exists(outputFile) or os.path.getmtime(inputFile) > os.path.getmtime(outputFile):
+      TransCodeFile(inputFile, outputFile, constMp3)      
         
   return
 
