@@ -88,6 +88,7 @@ def TransCodeFileCheck(inputFile):
         
   return
 
+
 def TransCodeFile(inputFile, outputFile, transcodeFormat): 
   #
   # Transcodes a file. Folder structure will be copied from the lossless (flac) tree.
