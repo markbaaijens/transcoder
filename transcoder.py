@@ -71,7 +71,7 @@ def TransCodeFile(inputFile, outputFile, transcodeFormat):
   # Output is redirected to the target-tree.
   # Folder structure will be copied from the source-tree
 
-  Log('- transcoding file: "' + inputFile + '" to ' + transcodeFormat)
+  Log('- transcoding file: "' + CompactPathName(inputFile) + '" to ' + transcodeFormat)
 
   if dryRun == 0:
 
@@ -116,7 +116,7 @@ def TransCodeFileOgg(inputFile, outputFile):
     output = p.communicate()[1]
     if p.returncode != 0:
       Log('- an error occured during transcoding')
-      Log('=>' + output) 
+      Log('=>' + CompactPathName(output)) 
 
     # Now we are ready with transcoding; copy to file to the desired output directory
     copyfile(tempOggFile, outputFile) 
@@ -151,7 +151,7 @@ def TransCodeFileMp3(inputFile, outputFile):
     output = p.communicate()[1]
     if p.returncode != 0:
       Log('- an error occured during decoding to .wav')
-      Log('=>' + output) 
+      Log('=>' + CompactPathName(output)) 
 
     # Determine name of a *local* temporary MP3-file; this makes it easier for
     # rights management (Popen is suspect to be critical about this)
@@ -168,7 +168,7 @@ def TransCodeFileMp3(inputFile, outputFile):
     output = p.communicate()[1]
     if p.returncode != 0:
       Log('- an error occured during transcoding')
-      Log('=>' + output) 
+      Log('=>' + CompactPathName(output)) 
 
     # Because the input flac file is decoded to wav, all metadata is lost.
     # We have to extract this metadata from the original flac file and
@@ -342,7 +342,7 @@ def CleanUpLossyTree(lossyTree, lossyFormat):
   #
   # Remove unwanted files in the losst tree 
   #
-  Log('Cleanup ' + lossyTree) 
+  Log('Cleanup ' + CompactPathName(lossyTree)) 
   global obsoleteFilesDeletedCount 
 
   for dir, dirNames, fileNames in os.walk(lossyTree, topdown=False): # Note the topdown
@@ -362,7 +362,7 @@ def CleanUpLossyTree(lossyTree, lossyFormat):
         if not os.path.isfile(sourceFile):                              
           if dryRun == 0:
             os.remove(lossyFile)
-          Log('- file deleted: ' + lossyFile)
+          Log('- file deleted: ' + CompactPathName(lossyFile))
           obsoleteFilesDeletedCount  += 1
       else: # Found a file but not a transcoded one
         # Check for transcoded files
@@ -377,7 +377,7 @@ def CleanUpLossyTree(lossyTree, lossyFormat):
           if not os.path.isfile(sourceFile):                              
             if dryRun == 0:
               os.remove(lossyFile)
-            Log('- file deleted: ' + lossyFile)
+            Log('- file deleted: ' + CompactPathName(lossyFile))
             obsoleteFilesDeletedCount  += 1
 
   # Remove empty directories, first the child directories
@@ -398,7 +398,7 @@ def RemoveEmptyDirectories(tree):
       if dir != tree:  # Never remove the top dir!   
         if dryRun == 0:
           os.rmdir(dir)
-        Log('- directory removed: ' + dir) 
+        Log('- directory removed: ' + CompactPathName(dir)) 
         global emptyFoldersDeletedCount
         emptyFoldersDeletedCount +=1
 
@@ -450,7 +450,7 @@ def CopyCoverFiles(lossyTree):
   from shutil import copyfile # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
   from math import trunc 
   
-  Log('Copy cover files to lossy tree: ' + lossyTree)
+  Log('Copy cover files to lossy tree: ' + CompactPathName(lossyTree))
   for dir, dirNames, fileNames in os.walk(sourceTree):
     dirNames.sort()
 
@@ -471,7 +471,7 @@ def CopyCoverFiles(lossyTree):
             copyFile = True
 
         if copyFile:
-          Log('- copying to ' + lossyCoverFullFileName) 
+          Log('- copying to ' + CompactPathName(lossyCoverFullFileName)) 
           global coverFilesCopiedCount
           coverFilesCopiedCount += 1
 
@@ -506,7 +506,7 @@ def UpdateCoverMp3(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
 
-    Log('- embedding album art in ' + lossyFileName) 
+    Log('- embedding album art in ' + CompactPathName(lossyFileName)) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.mp3'
@@ -537,7 +537,7 @@ def UpdateCoverOgg(lossyFileName, artworkFileName):
     import tempfile
     from shutil import copyfile  # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
     
-    Log('- embedding album art in ' + lossyFileName) 
+    Log('- embedding album art in ' + CompactPathName(lossyFileName)) 
 
     # Copy lossy file to a local location; to prevent (save) errors in a samba environment
     tempLossyFile = tempfile.gettempdir() + '/' + 'temp.ogg'
@@ -653,15 +653,15 @@ if (logDir != '') and not os.path.exists(logDir):
 
 # Check if file trees are valid
 if (sourceTree != '') and not os.path.exists(sourceTree):
-  Log('Location of source_tree = ' + CompactPathName(sourceTree) + ' is not valid. Abort.', True)
+  Log('Location of source_tree = ' + sourceTree + ' is not valid. Abort.', True)
   sys.exit(1)
 
 if oggEncoding == 1 and not os.path.exists(oggTree):
-  Log('Location of ogg_tree = ' + CompactPathName(oggTree) + ' is not valid. Abort.', True)
+  Log('Location of ogg_tree = ' + oggTree + ' is not valid. Abort.', True)
   sys.exit(1)
 
 if mp3Encoding == 1 and not os.path.exists(mp3Tree):
-  Log('Location of mp3_tree = ' + CompactPathName(mp3Tree) + ' is not valid. Abort.', True)
+  Log('Location of mp3_tree = ' + mp3Tree + ' is not valid. Abort.', True)
   sys.exit(1)
 
 # Check via existence of a lockfile, if there's another process running; if so, bail out...
