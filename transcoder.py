@@ -441,14 +441,14 @@ def TransCodeFiles():
 
   return
 
-def CopyCoverFiles(lossyTree):
+def EmbedAlbumArt(lossyTree):
   #
   # Copy cover files from flac- to lossy-tree(s); embed album art into transcoded file
   #
   from shutil import copyfile # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
   from math import trunc 
   
-  Log('Copy cover files to lossy tree: ' + lossyTree)
+  Log('Embed album art files to lossy tree: ' + lossyTree)
   for dir, dirNames, fileNames in os.walk(sourceTree):
     dirNames.sort()
 
@@ -462,7 +462,7 @@ def CopyCoverFiles(lossyTree):
         lossyCoverFullFileName = sourceCoverFullFileName.replace(sourceTree, lossyTree)  
 
         if (not os.path.isfile(lossyCoverFullFileName)) or (os.path.getmtime(sourceCoverFullFileName) > os.path.getmtime(lossyCoverFullFileName)):
-          Log('- copying to ' + lossyCoverFullFileName) 
+          Log('- copying album art to ' + lossyCoverFullFileName) 
           global coverFilesCopiedCount
           coverFilesCopiedCount += 1
 
@@ -706,9 +706,9 @@ TransCodeFiles()
       
 # Copy all cover files to the lossy tree(s)
 if oggEncoding == 1:
-  CopyCoverFiles(oggTree)
+  EmbedAlbumArt(oggTree)
 if mp3Encoding == 1:
-  CopyCoverFiles(mp3Tree)
+  EmbedAlbumArt(mp3Tree)
 
 # Scan all files in lossy trees. Delete or remove them if there is no
 # corresponding flac file

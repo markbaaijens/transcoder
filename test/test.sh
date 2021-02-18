@@ -58,7 +58,7 @@ function given_all_files_when_remove_cover-file_and_transcode_then_correct_logfi
     rm -rf "$image"
     python3 ../transcoder.py $source --mp3folder $destination --logfolder $root/
 
-    searchstringlog=${image/$destination/"\- copying to \[mp3_tree\]"}
+    searchstringlog=${image/$destination/"\- copying album art to \[mp3_tree\]"}
     if cat $root/$log_file | grep -q "$searchstringlog"; then echo "OK (log)"; else echo "Fail (log)"; fi
 }
 
