@@ -455,12 +455,11 @@ def EmbedAlbumArt(lossyTree):
     for fileName in sorted(fileNames):
       sourceCoverFullFileName = os.path.join(dir, fileName)
       if fnmatch(sourceCoverFullFileName, "*/cover.jpg"):
+        lossyCoverFullFileName = sourceCoverFullFileName.replace(sourceTree, lossyTree)  
 
         # Only copy file when:
         # (1) target cover file does not exit
         # (2) target cover file is older
-        lossyCoverFullFileName = sourceCoverFullFileName.replace(sourceTree, lossyTree)  
-
         if (not os.path.isfile(lossyCoverFullFileName)) or (os.path.getmtime(sourceCoverFullFileName) > os.path.getmtime(lossyCoverFullFileName)):
           Log('- copying album art to ' + lossyCoverFullFileName) 
           global coverFilesCopiedCount
@@ -572,13 +571,13 @@ def SanitizeFileName(fileName):
 #
 
 # Define global settings and give them some sensible defaults
-sourceTree=''
-oggTree=''
-oggQuality=1
-mp3Tree=''
-mp3Bitrate=128
-dryRun=0
-logDir=''
+sourceTree = ''
+oggTree = ''
+oggQuality = 1
+mp3Tree = ''
+mp3Bitrate = 128
+dryRun = 0
+logDir = ''
 showVerbose = 0
 
 #
