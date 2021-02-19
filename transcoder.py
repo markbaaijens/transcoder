@@ -34,7 +34,7 @@ def Log(logText, raw=False, forceConsole=False):
     #
     # Log to a predefined log file.
     #
-    if dryRun == 1:
+    if dryRun:
         logText = '(dry-run) ' + logText
 
     # More compact logging: replace fulldirs with [source_tree], [mp3_tree] and [ogg_tree]
@@ -72,7 +72,7 @@ def TransCodeFile(inputFile, outputFile, transcodeFormat):
 
     Log('- transcoding file: "' + inputFile + '" to ' + transcodeFormat)
 
-    if dryRun == 0:
+    if not dryRun:
 
         # Create parent folders if the target folder for the output file does not exist
         outputFilebasedir = os.path.split(outputFile)[0]
@@ -338,7 +338,7 @@ def CleanUpLossyTree(lossyTree, lossyFormat):
 
               # Check if there exists a corresponding sourceFile
               if not os.path.isfile(sourceFile):                              
-                  if dryRun == 0:
+                  if not dryRun:
                       os.remove(lossyFile)
                   Log('- file deleted: ' + lossyFile)
                   obsoleteFilesDeletedCount  += 1
@@ -353,7 +353,7 @@ def CleanUpLossyTree(lossyTree, lossyFormat):
 
                   # Check if there exists a corresponding sourceFile
                   if not os.path.isfile(sourceFile):                              
-                      if dryRun == 0:
+                      if not dryRun:
                           os.remove(lossyFile)
                       Log('- file deleted: ' + lossyFile)
                       obsoleteFilesDeletedCount  += 1
@@ -373,7 +373,7 @@ def RemoveEmptyDirectories(tree):
       dirNames.sort()
       
       if (len(dirNames) == 0) and (len(fileNames) == 0) and (dir != tree):  # Never remove the top dir!   
-          if dryRun == 0:
+          if not dryRun:
               os.rmdir(dir)
           Log('- directory removed: ' + dir) 
           global emptyFoldersDeletedCount
@@ -432,38 +432,38 @@ def EmbedAlbumArt(lossyTree):
         dirNames.sort()
 
         for fileName in sorted(fileNames):
-            sourceCoverFullFileName = os.path.join(dir, fileName)
-            if fnmatch(sourceCoverFullFileName, "*/cover.jpg"):
-                lossyCoverFullFileName = sourceCoverFullFileName.replace(sourceTree, lossyTree)  
+            sourceFullFileName = os.path.join(dir, fileName)
+            if fnmatch(sourceFullFileName, "*/cover.jpg"):
+                lossyCoverFullFileName = sourceFullFileName.replace(sourceTree, lossyTree)  
 
                 # Only copy file when:
                 # (1) target cover file does not exit
                 # (2) target cover file is older
-                if (not os.path.isfile(lossyCoverFullFileName)) or (os.path.getmtime(sourceCoverFullFileName) > os.path.getmtime(lossyCoverFullFileName)):
+                if (not os.path.isfile(lossyCoverFullFileName)) or (os.path.getmtime(sourceFullFileName) > os.path.getmtime(lossyCoverFullFileName)):
                     Log('- copying album art to ' + lossyCoverFullFileName) 
                     global coverFilesCopiedCount
                     coverFilesCopiedCount += 1
 
-                    if dryRun == 0:
+                    if not dryRun:
                         # Create intermediate-level directories in the output tree; normally, these already exist
                         # because during transcoding they will be created; but this is 'just in case'
-                        outputFileBaseDir = os.path.split(lossyCoverFullFileName)[0]
-                        if not os.path.exists(outputFileBaseDir):
+                        lossyCoverBaseDir = os.path.split(lossyCoverFullFileName)[0]
+                        if not os.path.exists(lossyCoverBaseDir):
                             # Make all intermediate-level directories needed to contain the leaf directory.
-                            os.makedirs(outputFileBaseDir)       
+                            os.makedirs(lossyCoverBaseDir)       
 
                         # Copy the cover file
-                        copyfile(sourceCoverFullFileName, lossyCoverFullFileName) 
+                        copyfile(sourceFullFileName, lossyCoverFullFileName) 
 
                         global coverEmbeddedCount
                         # Embed image in each audio file in the current dir
-                        for fileName in sorted(os.listdir(outputFileBaseDir)):
-                            lossyFileFullFileName = os.path.join(outputFileBaseDir,  fileName)  
+                        for fileName in sorted(os.listdir(lossyCoverBaseDir)):
+                            lossyFileFullFileName = os.path.join(lossyCoverBaseDir,  fileName)  
                             if os.path.splitext(fileName)[1] ==  '.' + constMp3:
-                                UpdateCoverMp3(lossyFileFullFileName, sourceCoverFullFileName)
+                                UpdateCoverMp3(lossyFileFullFileName, sourceFullFileName)
                                 coverEmbeddedCount += 1
                             if os.path.splitext(fileName)[1] == '.' + constOgg:
-                                UpdateCoverOgg(lossyFileFullFileName, sourceCoverFullFileName)                    
+                                UpdateCoverOgg(lossyFileFullFileName, sourceFullFileName)                    
                                 coverEmbeddedCount += 1
 
     return  
