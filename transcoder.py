@@ -566,166 +566,168 @@ def SanitizeFileName(fileName):
         fileName = fileName[:-1]  # Strip the last character
     return fileName
 
-#
-# Body
-#
 
-# Define global settings and give them some sensible defaults
-sourceTree = ''
-oggTree = ''
-oggQuality = 1
-mp3Tree = ''
-mp3Bitrate = 128
-dryRun = 0
-logDir = ''
-showVerbose = 0
+if __name__ == '__main__':
+    #
+    # Body
+    #
 
-#
-# Parse command line arguments
-#
-import argparse
-parser = argparse.ArgumentParser(description='Transcode lossless audio files (flac) to lossy formats (mp3/ogg).')
+    # Define global settings and give them some sensible defaults
+    sourceTree = ''
+    oggTree = ''
+    oggQuality = 1
+    mp3Tree = ''
+    mp3Bitrate = 128
+    dryRun = 0
+    logDir = ''
+    showVerbose = 0
 
-parser.add_argument('sourcefolder', metavar='sourcefolder', type=str, help='folder containing source files (flac)')
-parser.add_argument('-v', '--verbose', help="increase output verbosity; show (more) output to console", action="store_true")
-parser.add_argument('-d', '--dry-run', help="perform a trial run with no changes made",  action="store_true")        
-parser.add_argument('--logfolder', type=str,  help="folder where log (= transcoder.log) is stored; no folder is no logging",  nargs=1) 
-parser.add_argument('--mp3folder', type=str,  help="folder where transcoded mp3's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
-parser.add_argument('--mp3bitrate', type=int,  help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[128, 256, 384]) 
-parser.add_argument('--oggfolder', type=str,  help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
-parser.add_argument('--oggquality', type=int,  help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[1, 2, 3, 4, 5]) 
+    #
+    # Parse command line arguments
+    #
+    import argparse
+    parser = argparse.ArgumentParser(description='Transcode lossless audio files (flac) to lossy formats (mp3/ogg).')
 
-args = parser.parse_args()
+    parser.add_argument('sourcefolder', metavar='sourcefolder', type=str, help='folder containing source files (flac)')
+    parser.add_argument('-v', '--verbose', help="increase output verbosity; show (more) output to console", action="store_true")
+    parser.add_argument('-d', '--dry-run', help="perform a trial run with no changes made",  action="store_true")        
+    parser.add_argument('--logfolder', type=str,  help="folder where log (= transcoder.log) is stored; no folder is no logging",  nargs=1) 
+    parser.add_argument('--mp3folder', type=str,  help="folder where transcoded mp3's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
+    parser.add_argument('--mp3bitrate', type=int,  help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[128, 256, 384]) 
+    parser.add_argument('--oggfolder', type=str,  help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
+    parser.add_argument('--oggquality', type=int,  help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[1, 2, 3, 4, 5]) 
 
-# Pass command line argument(s) to setting variable(s)
-showVerbose = args.verbose
-dryRun = args.dry_run
-sourceTree = SanitizeFileName(args.sourcefolder)
+    args = parser.parse_args()
 
-# --logfolder is optional
-if (args.logfolder != None) and (args.logfolder[0] != ''):
-  logDir = args.logfolder[0]
-logDir = SanitizeFileName(logDir)   
+    # Pass command line argument(s) to setting variable(s)
+    showVerbose = args.verbose
+    dryRun = args.dry_run
+    sourceTree = SanitizeFileName(args.sourcefolder)
 
-# --mp3folder is optional
-if (args.mp3folder != None) and (args.mp3folder[0] != ''):
-  mp3Tree = args.mp3folder[0]
-mp3Tree = SanitizeFileName(mp3Tree)
+    # --logfolder is optional
+    if (args.logfolder != None) and (args.logfolder[0] != ''):
+      logDir = args.logfolder[0]
+    logDir = SanitizeFileName(logDir)   
 
-# --oggfolder is optional
-if (args.oggfolder != None) and (args.oggfolder[0] != ''):
-  oggTree = args.oggfolder[0]
-oggTree = SanitizeFileName(oggTree)
-        
-# --oggquality is optional
-if (args.oggquality != None) and (args.oggquality[0] != ''):
-  oggQuality = args.oggquality[0]
+    # --mp3folder is optional
+    if (args.mp3folder != None) and (args.mp3folder[0] != ''):
+      mp3Tree = args.mp3folder[0]
+    mp3Tree = SanitizeFileName(mp3Tree)
 
-# --mp3bitrate is optional
-if (args.mp3bitrate != None) and (args.mp3bitrate[0] != ''):
-  mp3Bitrate = args.mp3bitrate[0]
+    # --oggfolder is optional
+    if (args.oggfolder != None) and (args.oggfolder[0] != ''):
+      oggTree = args.oggfolder[0]
+    oggTree = SanitizeFileName(oggTree)
+            
+    # --oggquality is optional
+    if (args.oggquality != None) and (args.oggquality[0] != ''):
+      oggQuality = args.oggquality[0]
 
-# Calculate derived variables
-oggEncoding = 0
-if oggTree  !='':
-  oggEncoding = 1
+    # --mp3bitrate is optional
+    if (args.mp3bitrate != None) and (args.mp3bitrate[0] != ''):
+      mp3Bitrate = args.mp3bitrate[0]
 
-mp3Encoding = 0
-if mp3Tree != '':
-  mp3Encoding = 1
+    # Calculate derived variables
+    oggEncoding = 0
+    if oggTree  !='':
+      oggEncoding = 1
 
-# Check if log location is valid
-if (logDir != '') and (not os.path.exists(logDir)):
-  # When the logdir is invalid, we cannot write to a log obviously; so just print the 
-  # error to the console
-  print('Location of log_dir = ' + logDir + ' is not valid. Abort.')
-  sys.exit(1)
+    mp3Encoding = 0
+    if mp3Tree != '':
+      mp3Encoding = 1
 
-# Check if file trees are valid
-if (sourceTree != '') and (not os.path.exists(sourceTree)):
-  Log('Location of source_tree = ' + sourceTree + ' is not valid. Abort.', True, True)
-  sys.exit(1)
+    # Check if log location is valid
+    if (logDir != '') and (not os.path.exists(logDir)):
+      # When the logdir is invalid, we cannot write to a log obviously; so just print the 
+      # error to the console
+      print('Location of log_dir = ' + logDir + ' is not valid. Abort.')
+      sys.exit(1)
 
-if (oggEncoding == 1) and (not os.path.exists(oggTree)):
-  Log('Location of ogg_tree = ' + oggTree + ' is not valid. Abort.', True, True)
-  sys.exit(1)
+    # Check if file trees are valid
+    if (sourceTree != '') and (not os.path.exists(sourceTree)):
+      Log('Location of source_tree = ' + sourceTree + ' is not valid. Abort.', True, True)
+      sys.exit(1)
 
-if (mp3Encoding == 1) and (not os.path.exists(mp3Tree)):
-  Log('Location of mp3_tree = ' + mp3Tree + ' is not valid. Abort.', True, True)
-  sys.exit(1)
+    if (oggEncoding == 1) and (not os.path.exists(oggTree)):
+      Log('Location of ogg_tree = ' + oggTree + ' is not valid. Abort.', True, True)
+      sys.exit(1)
 
-# Check via existence of a lockfile, if there's another process running; if so, bail out...
-lockfile = '/tmp/transcoder.lock'
-if os.path.exists(lockfile):
-  Log('Starting transcoder. But another process is still running, lockfile found ("rm ' + lockfile + '" to continue). Abort.', True, True)
-  sys.exit(1)
+    if (mp3Encoding == 1) and (not os.path.exists(mp3Tree)):
+      Log('Location of mp3_tree = ' + mp3Tree + ' is not valid. Abort.', True, True)
+      sys.exit(1)
 
-# Remove lockfile on exit, even when the user hits Crtl+C
-import atexit
-atexit.register(os.remove, lockfile)
+    # Check via existence of a lockfile, if there's another process running; if so, bail out...
+    lockfile = '/tmp/transcoder.lock'
+    if os.path.exists(lockfile):
+      Log('Starting transcoder. But another process is still running, lockfile found ("rm ' + lockfile + '" to continue). Abort.', True, True)
+      sys.exit(1)
 
-# Place lock file 
-outputFile = open(lockfile,'w')
-outputFile.write('lock')
-outputFile.close()
+    # Remove lockfile on exit, even when the user hits Crtl+C
+    import atexit
+    atexit.register(os.remove, lockfile)
 
-# Give a hint for seeing progress
-if (logDir == '') and (not showVerbose):
-  print('Hint: to monitor progress, use --verbose or --logfolder (or both)')
+    # Place lock file 
+    outputFile = open(lockfile,'w')
+    outputFile.write('lock')
+    outputFile.close()
 
-# Start logging
-Log('Start session')
+    # Give a hint for seeing progress
+    if (logDir == '') and (not showVerbose):
+      print('Hint: to monitor progress, use --verbose or --logfolder (or both)')
 
-Log('- source_tree: ' + sourceTree, True)
-Log('- dry_run: ' + str(dryRun))
-Log('- show_verbose: ' + str(showVerbose))
+    # Start logging
+    Log('Start session')
 
-logText = '- ogg_tree: ' + oggTree
-if (oggTree == ''):
-    logText += '(empty) => no transcoding'
-Log(logText, True)
-if (oggTree != ''):
-    Log('- ogg_quality: ' + str(oggQuality))
+    Log('- source_tree: ' + sourceTree, True)
+    Log('- dry_run: ' + str(dryRun))
+    Log('- show_verbose: ' + str(showVerbose))
 
-logText = '- mp3_tree: ' + mp3Tree
-if (mp3Tree == ''):
-    logText += '(empty) => no transcoding'
-Log(logText, True)
-if (mp3Tree != ''):
-    Log('- mp3_bitrate: ' + str(mp3Bitrate))
+    logText = '- ogg_tree: ' + oggTree
+    if (oggTree == ''):
+        logText += '(empty) => no transcoding'
+    Log(logText, True)
+    if (oggTree != ''):
+        Log('- ogg_quality: ' + str(oggQuality))
 
-logText = '- logging to: ' + LogFileName()
-if (LogFileName() == ''):
-    logText += '(empty) => no logging'
-Log(logText)    
+    logText = '- mp3_tree: ' + mp3Tree
+    if (mp3Tree == ''):
+        logText += '(empty) => no transcoding'
+    Log(logText, True)
+    if (mp3Tree != ''):
+        Log('- mp3_bitrate: ' + str(mp3Bitrate))
 
-# Scan all files in source_tree, check every individual file if it needs
-# transcoding or tag synchronizing.
-TransCodeFiles()
-      
-# Copy all cover files to the lossy tree(s)
-if oggEncoding == 1:
-  EmbedAlbumArt(oggTree)
-if mp3Encoding == 1:
-  EmbedAlbumArt(mp3Tree)
+    logText = '- logging to: ' + LogFileName()
+    if (LogFileName() == ''):
+        logText += '(empty) => no logging'
+    Log(logText)    
 
-# Scan all files in lossy trees. Delete or remove them if there is no
-# corresponding flac file
-if oggEncoding == 1:
-  CleanUpLossyTree(oggTree, constOgg)
-if mp3Encoding == 1:
-  CleanUpLossyTree(mp3Tree, constMp3)
+    # Scan all files in source_tree, check every individual file if it needs
+    # transcoding or tag synchronizing.
+    TransCodeFiles()
+          
+    # Copy all cover files to the lossy tree(s)
+    if oggEncoding == 1:
+      EmbedAlbumArt(oggTree)
+    if mp3Encoding == 1:
+      EmbedAlbumArt(mp3Tree)
 
-# Show summary
-Log('Summary')
-Log('- flacs scanned: ' + str(flacsScannedCount))
-Log('- transcoded to mp3: ' + str(mp3TranscodedCount))
-Log('- transcoded to ogg: ' + str(oggTranscodedCount))
-Log('- cover files copied: ' + str(coverFilesCopiedCount))
-Log('- covers embedded in files: ' + str(coverEmbeddedCount))
-Log('- obsolete files deleted: ' + str(obsoleteFilesDeletedCount))
-Log('- empty folders deleted: ' + str(emptyFoldersDeletedCount))
+    # Scan all files in lossy trees. Delete or remove them if there is no
+    # corresponding flac file
+    if oggEncoding == 1:
+      CleanUpLossyTree(oggTree, constOgg)
+    if mp3Encoding == 1:
+      CleanUpLossyTree(mp3Tree, constMp3)
 
-# Stop logging
-Log('End session')
-sys.exit(0)
+    # Show summary
+    Log('Summary')
+    Log('- flacs scanned: ' + str(flacsScannedCount))
+    Log('- transcoded to mp3: ' + str(mp3TranscodedCount))
+    Log('- transcoded to ogg: ' + str(oggTranscodedCount))
+    Log('- cover files copied: ' + str(coverFilesCopiedCount))
+    Log('- covers embedded in files: ' + str(coverEmbeddedCount))
+    Log('- obsolete files deleted: ' + str(obsoleteFilesDeletedCount))
+    Log('- empty folders deleted: ' + str(emptyFoldersDeletedCount))
+
+    # Stop logging
+    Log('End session')
+    sys.exit(0)
