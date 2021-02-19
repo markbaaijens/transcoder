@@ -434,12 +434,13 @@ def EmbedAlbumArt(lossyTree):
         for fileName in sorted(fileNames):
             sourceFullFileName = os.path.join(dir, fileName)
             if fnmatch(sourceFullFileName, "*/cover.jpg"):
-                lossyCoverFullFileName = sourceFullFileName.replace(sourceTree, lossyTree)  
+                sourceCoverFullFileName = sourceFullFileName
+                lossyCoverFullFileName = sourceCoverFullFileName.replace(sourceTree, lossyTree)  
 
                 # Only copy file when:
                 # (1) target cover file does not exit
                 # (2) target cover file is older
-                if (not os.path.isfile(lossyCoverFullFileName)) or (os.path.getmtime(sourceFullFileName) > os.path.getmtime(lossyCoverFullFileName)):
+                if (not os.path.isfile(lossyCoverFullFileName)) or (os.path.getmtime(sourceCoverFullFileName) > os.path.getmtime(lossyCoverFullFileName)):
                     Log('- copying album art to ' + lossyCoverFullFileName) 
                     global coverFilesCopiedCount
                     coverFilesCopiedCount += 1
@@ -453,17 +454,17 @@ def EmbedAlbumArt(lossyTree):
                             os.makedirs(lossyCoverBaseDir)       
 
                         # Copy the cover file
-                        copyfile(sourceFullFileName, lossyCoverFullFileName) 
+                        copyfile(sourceCoverFullFileName, lossyCoverFullFileName) 
 
                         global coverEmbeddedCount
                         # Embed image in each audio file in the current dir
                         for fileName in sorted(os.listdir(lossyCoverBaseDir)):
                             lossyFileFullFileName = os.path.join(lossyCoverBaseDir,  fileName)  
                             if os.path.splitext(fileName)[1] ==  '.' + constMp3:
-                                UpdateCoverMp3(lossyFileFullFileName, sourceFullFileName)
+                                UpdateCoverMp3(lossyFileFullFileName, lossyCoverFullFileName)
                                 coverEmbeddedCount += 1
                             if os.path.splitext(fileName)[1] == '.' + constOgg:
-                                UpdateCoverOgg(lossyFileFullFileName, sourceFullFileName)                    
+                                UpdateCoverOgg(lossyFileFullFileName, lossyCoverFullFileName)                    
                                 coverEmbeddedCount += 1
 
     return  
