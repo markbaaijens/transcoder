@@ -95,11 +95,12 @@ function given_all_files_when_changed_to_newer_date_of_source_cover-jpg_then_re-
 function given_all_files_when_delete_source_file_then_delete_lossy_file {
     echo "* ${FUNCNAME[0]}"
     source="$root/flac"
+    readarray -d '' flacs < <(find $source -type f -name "*.flac" -print0)
+    cp "${flacs[0]}" $source/test.flac
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
     rm -f $root/$log_file
 
-    readarray -d '' flacs < <(find $source -type f -name "*.flac" -print0)
-    rm -rf "${flacs[0]}"
+    rm -rf $source/test.flac
     python3 ../transcoder.py $source --mp3folder $root/mp3 --oggfolder $root/ogg --logfolder $root/
 
     if find $root/mp3 -type f -name "*.mp3" | wc -l  | grep -q "$(find $source -type f -name "*.flac" | wc -l)"; then echo "OK (count mp3)"; else echo "Fail (count mp3)"; fi
