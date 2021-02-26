@@ -381,16 +381,10 @@ def RemoveEmptyDirectories(tree):
 
   return
 
-def TransCodeFiles():
+def TransCodeOggFiles():
     #
-    # Transcode all files; wrapper for transCodeFile()
+    # Transcode all OGG files
     #
-    Log('Transcode files')
-
-    if (oggEncoding == 0 and mp3Encoding == 0):
-        Log('- no transcoding to ogg or mp3 is set; nothing to do')
-        return
-
     for dir, dirNames, fileNames in os.walk(sourceTree):
         dirNames.sort()
 
@@ -400,23 +394,34 @@ def TransCodeFiles():
                 global flacsScannedCount
                 flacsScannedCount += 1
 
-                # Compile directory and file name and do some checking for each 
-                # supported lossless transcode format.
-                if oggEncoding == 1:    
-                    outputFile = os.path.splitext(sourceFileFullPathName)[0] + '.' + constOgg  # Change extension
-                    outputFile = outputFile.replace(sourceTree, oggTree)         # Change root of file tree
-                  
-                    # Check if outputFile exists
-                    if (not os.path.exists(outputFile)) or (os.path.getmtime(sourceFileFullPathName) > os.path.getmtime(outputFile)):
-                        TransCodeFile(sourceFileFullPathName, outputFile, constOgg)
+                outputFile = os.path.splitext(sourceFileFullPathName)[0] + '.' + constOgg  # Change extension
+                outputFile = outputFile.replace(sourceTree, oggTree)         # Change root of file tree
+                
+                # Check if outputFile exists
+                if (not os.path.exists(outputFile)) or (os.path.getmtime(sourceFileFullPathName) > os.path.getmtime(outputFile)):
+                    TransCodeFile(sourceFileFullPathName, outputFile, constOgg)
 
-                if mp3Encoding == 1:    
-                    outputFile = os.path.splitext(sourceFileFullPathName)[0] + '.' + constMp3  # Change extension
-                    outputFile = outputFile.replace(sourceTree, mp3Tree)         # Change root of file tree
+    return
 
-                    # Check if outputFile exists
-                    if (not os.path.exists(outputFile)) or (os.path.getmtime(sourceFileFullPathName) > os.path.getmtime(outputFile)):
-                        TransCodeFile(sourceFileFullPathName, outputFile, constMp3)      
+def TransCodeMp3Files():
+    #
+    # Transcode all MP3 files
+    #
+    for dir, dirNames, fileNames in os.walk(sourceTree):
+        dirNames.sort()
+
+        for fileName in sorted(fileNames):
+            sourceFileFullPathName = os.path.join(dir, fileName)
+            if fnmatch(sourceFileFullPathName, "*.flac"):
+                global flacsScannedCount
+                flacsScannedCount += 1
+
+                outputFile = os.path.splitext(sourceFileFullPathName)[0] + '.' + constMp3  # Change extension
+                outputFile = outputFile.replace(sourceTree, mp3Tree)         # Change root of file tree
+
+                # Check if outputFile exists
+                if (not os.path.exists(outputFile)) or (os.path.getmtime(sourceFileFullPathName) > os.path.getmtime(outputFile)):
+                    TransCodeFile(sourceFileFullPathName, outputFile, constMp3)      
 
     return
 
@@ -684,8 +689,13 @@ if __name__ == '__main__':
 
     # Scan all files in source_tree, check every individual file if it needs
     # transcoding or tag synchronizing.
-    TransCodeFiles()
-          
+    if oggEncoding == 1:
+        Log('Transcode Ogg files')
+        TransCodeOggFiles()
+    if mp3Encoding == 1:
+        Log('Transcode Mp3 files')
+        TransCodeMp3Files()
+
     # Copy all cover files to the lossy tree(s)
     if oggEncoding == 1:
         EmbedAlbumArt(oggTree)
