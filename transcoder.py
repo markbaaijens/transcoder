@@ -432,7 +432,6 @@ def EmbedAlbumArt(lossyTree):
     from shutil import copyfile # Use copyfile b/c this will *not* copy rights (which is error prone on gvfs/samba)
     from math import trunc 
     
-    Log('Embed album art files to lossy tree: ' + lossyTree)
     for dir, dirNames, fileNames in os.walk(sourceTree):
         dirNames.sort()
 
@@ -698,8 +697,10 @@ if __name__ == '__main__':
 
     # Copy all cover files to the lossy tree(s)
     if oggEncoding == 1:
+        Log('Embed album art files to lossy tree: ' + oggTree)
         EmbedAlbumArt(oggTree)
     if mp3Encoding == 1:
+        Log('Embed album art files to lossy tree: ' + mp3Tree)
         EmbedAlbumArt(mp3Tree)
 
     # Scan all files in lossy trees. Delete or remove them if there is no
