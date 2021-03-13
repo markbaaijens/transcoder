@@ -21,6 +21,17 @@ constMp3 = 'mp3'
 constOgg = 'ogg'
 constLogFileName = 'transcoder.log'
 
+sourceTree = ''
+oggTree = ''
+oggQuality = 1
+oggEncoding = 0
+mp3Tree = ''
+mp3Bitrate = 128
+mp3Encoding = 0
+dryRun = 0
+logDir = ''
+showVerbose = 0
+
 def LogFileName():
     logFileName = ''
     if (logDir != ''):
@@ -413,15 +424,18 @@ def StripLastSlashFromPathName(fileName):
         fileName = fileName[:-1] 
     return fileName
 
-if __name__ == '__main__':
-    sourceTree = ''
-    oggTree = ''
-    oggQuality = 1
-    mp3Tree = ''
-    mp3Bitrate = 128
-    dryRun = 0
-    logDir = ''
-    showVerbose = 0
+def Main():
+    global sourceTree
+    global oggTree
+    global oggQuality
+    global oggEncoding
+    global mp3Tree
+    global mp3Bitrate
+    global mp3Encoding
+    global dryRun
+    global logDir
+    global showVerbose
+
 
     import argparse
     parser = argparse.ArgumentParser(description='Transcode lossless audio files (flac) to lossy formats (mp3/ogg).')
@@ -542,3 +556,8 @@ if __name__ == '__main__':
 
     Log('End session')
     sys.exit(0)
+
+    return
+
+if __name__ == '__main__':
+    Main()
