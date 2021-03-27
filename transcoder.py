@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Authors.: Mark Baaijens, Mike van Dartel, Debora Kniknie
 #
