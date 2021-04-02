@@ -11,7 +11,8 @@ RUN apt-get install python3-mutagen -y
 RUN apt-get install python3-pil  -y
 COPY ./transcoder.py  /usr/local/bin/transcoder.py
 RUN chmod +x /usr/local/bin/transcoder.py
-RUN mkdir /source
+RUN mkdir /zone
+WORKDIR /zone
 RUN apt-get autoremove -y 
 RUN apt-get clean 
 RUN rm -rf /var/lib/apt/lists/*
