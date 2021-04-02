@@ -10,3 +10,6 @@ RUN apt install wget -y
 RUN wget https://raw.githubusercontent.com/markbaaijens/transcoder/master/transcoder.py -O /usr/local/bin/transcoder.py
 RUN chmod +x /usr/local/bin/transcoder.py
 RUN mkdir /source
+RUN apt-get autoremove -y 
+RUN apt-get clean 
+RUN rm -rf /var/lib/apt/lists/*
