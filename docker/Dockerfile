@@ -1,9 +1,6 @@
 FROM ubuntu
 RUN apt-get update
 RUN apt-get install vorbis-tools -y
-RUN apt-get install vorbis-tools -y
-RUN apt-get install vorbis-tools -y
-RUN apt-get install vorbis-tools -y
 RUN apt-get install lame -y
 RUN apt-get install flac -y
 RUN apt-get install python3 -y
