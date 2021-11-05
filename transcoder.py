@@ -436,24 +436,73 @@ def Main():
     global logDir
     global showVerbose
 
-
     import argparse
     parser = argparse.ArgumentParser(description='Transcode lossless audio files (flac) to lossy formats (mp3/ogg).')
 
-    parser.add_argument('sourcefolder', metavar='sourcefolder', type=str, help='folder containing source files (flac)')
+    parser.add_argument('--sourcefolder', metavar='sourcefolder', type=str, help='folder containing source files (flac)', nargs=1)
     parser.add_argument('-v', '--verbose', help="increase output verbosity; show (more) output to console", action="store_true")
     parser.add_argument('-d', '--dry-run', help="perform a trial run with no changes made",  action="store_true")        
-    parser.add_argument('--logfolder', type=str,  help="folder where log (= transcoder.log) is stored; no folder is no logging",  nargs=1) 
-    parser.add_argument('--mp3folder', type=str,  help="folder where transcoded mp3's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
-    parser.add_argument('--mp3bitrate', type=int,  help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[128, 256, 384]) 
-    parser.add_argument('--oggfolder', type=str,  help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
-    parser.add_argument('--oggquality', type=int,  help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[1, 2, 3, 4, 5]) 
+    parser.add_argument('--logfolder', type=str, help="folder where log (= transcoder.log) is stored; no folder is no logging",  nargs=1) 
+    parser.add_argument('--mp3folder', type=str, help="folder where transcoded mp3's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
+    parser.add_argument('--mp3bitrate', type=int, help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[128, 256, 384]) 
+    parser.add_argument('--oggfolder', type=str, help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
+    parser.add_argument('--oggquality', type=int, help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[1, 2, 3, 4, 5]) 
+    parser.add_argument('--settingsfile', type=str, help="file where different settings are stored",  nargs=1) 
 
     args = parser.parse_args()
 
-    showVerbose = args.verbose
-    dryRun = args.dry_run
-    sourceTree = StripLastSlashFromPathName(args.sourcefolder)
+    import json
+    if (args.settingsfile != None) and (args.settingsfile[0] != ''):
+        settingsFile = args.settingsfile[0]
+        if os.path.isfile(settingsFile):
+            with open(settingsFile) as file:
+                dataAsDict = json.load(file)
+            dataAsJson = json.loads(json.dumps(dataAsDict))
+            try:
+                sourceTree = dataAsJson["sourcefolder"]
+            except:
+                pass
+            try:
+                if dataAsJson["verbose"]:
+                    showVerbose = dataAsJson["verbose"]
+            except:
+                pass
+            try:
+                if dataAsJson["dry-run"]:                    
+                    dryRun = dataAsJson["dry-run"]
+            except:
+                pass
+            try:
+                logDir = dataAsJson["logfolder"]
+            except:
+                pass
+            try:
+                mp3Tree = dataAsJson["mp3folder"]
+            except:
+                pass
+            try:
+                oggTree = dataAsJson["oggfolder"]  
+            except:
+                pass
+            try:
+                if dataAsJson["oggquality"] != 0:
+                    oggQuality = dataAsJson["oggquality"]
+            except:
+                pass
+            try:
+                if dataAsJson["mp3bitrate"] != 0:                    
+                    mp3Bitrate = dataAsJson["mp3bitrate"]
+            except:
+                pass
+
+    if args.verbose:
+        showVerbose = args.verbose
+    if args.dry_run:        
+        dryRun = args.dry_run
+
+    if (args.sourcefolder != None) and (args.sourcefolder[0] != ''):
+        sourceTree = args.sourcefolder[0]
+    sourceTree = StripLastSlashFromPathName(sourceTree)
 
     if (args.logfolder != None) and (args.logfolder[0] != ''):
         logDir = args.logfolder[0]
@@ -477,19 +526,23 @@ def Main():
     mp3Encoding = (mp3Tree != '')
 
     if (logDir != '') and (not os.path.exists(logDir)):
-        print('Location of log_dir = ' + logDir + ' is not valid. Abort.')
+        print('Location of logfolder = ' + logDir + ' is not valid. Abort.')
         sys.exit(1)
 
+    if (sourceTree == ''):
+        Log('Value of sourcefolder is required. Abort.', True, True)
+        sys.exit(1)        
+
     if (sourceTree != '') and (not os.path.exists(sourceTree)):
-        Log('Location of source_tree = ' + sourceTree + ' is not valid. Abort.', True, True)
+        Log('Location of sourcefolder = ' + sourceTree + ' is not valid. Abort.', True, True)
         sys.exit(1)
 
     if (oggEncoding == 1) and (not os.path.exists(oggTree)):
-        Log('Location of ogg_tree = ' + oggTree + ' is not valid. Abort.', True, True)
+        Log('Location of oggfolder = ' + oggTree + ' is not valid. Abort.', True, True)
         sys.exit(1)
 
     if (mp3Encoding == 1) and (not os.path.exists(mp3Tree)):
-        Log('Location of mp3_tree = ' + mp3Tree + ' is not valid. Abort.', True, True)
+        Log('Location of mp3folder = ' + mp3Tree + ' is not valid. Abort.', True, True)
         sys.exit(1)
 
     lockfile = '/tmp/transcoder.lock'

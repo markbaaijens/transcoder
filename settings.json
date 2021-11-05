@@ -1,0 +1,10 @@
+{
+    "sourcefolder": "",
+    "verbose": false,
+    "dry-run": false,
+    "logfolder": "",
+    "mp3folder": "",    
+    "oggfolder": "",
+    "oggquality": 0,
+    "mp3bitrate": 0
+}
