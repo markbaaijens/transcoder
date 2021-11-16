@@ -459,7 +459,8 @@ def Main():
                 dataAsDict = json.load(file)
             dataAsJson = json.loads(json.dumps(dataAsDict))
             try:
-                sourceTree = dataAsJson["sourcefolder"]
+                if dataAsJson["sourcefolder"]:
+                    sourceTree = dataAsJson["sourcefolder"]
             except:
                 pass
             try:
@@ -495,6 +496,7 @@ def Main():
             except:
                 pass
 
+    # Settings from settings-file are overruled by parameters on the command-line
     if args.verbose:
         showVerbose = args.verbose
     if args.dry_run:        
