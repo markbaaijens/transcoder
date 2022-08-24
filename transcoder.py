@@ -448,6 +448,8 @@ def Main():
     parser.add_argument('--oggfolder', type=str, help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
     parser.add_argument('--oggquality', type=int, help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[1, 2, 3, 4, 5]) 
 
+    args = parser.parse_args()    
+
     if args.verbose:
         showVerbose = args.verbose
     if args.dry_run:        
