@@ -447,56 +447,7 @@ def Main():
     parser.add_argument('--mp3bitrate', type=int, help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[128, 256, 384]) 
     parser.add_argument('--oggfolder', type=str, help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
     parser.add_argument('--oggquality', type=int, help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[1, 2, 3, 4, 5]) 
-    parser.add_argument('--settingsfile', type=str, help="file where different settings are stored",  nargs=1) 
 
-    args = parser.parse_args()
-
-    import json
-    if (args.settingsfile != None) and (args.settingsfile[0] != ''):
-        settingsFile = args.settingsfile[0]
-        if os.path.isfile(settingsFile):
-            with open(settingsFile) as file:
-                dataAsDict = json.load(file)
-            dataAsJson = json.loads(json.dumps(dataAsDict))
-            try:
-                if dataAsJson["sourcefolder"]:
-                    sourceTree = dataAsJson["sourcefolder"]
-            except:
-                pass
-            try:
-                if dataAsJson["verbose"]:
-                    showVerbose = dataAsJson["verbose"]
-            except:
-                pass
-            try:
-                if dataAsJson["dry-run"]:                    
-                    dryRun = dataAsJson["dry-run"]
-            except:
-                pass
-            try:
-                logDir = dataAsJson["logfolder"]
-            except:
-                pass
-            try:
-                mp3Tree = dataAsJson["mp3folder"]
-            except:
-                pass
-            try:
-                oggTree = dataAsJson["oggfolder"]  
-            except:
-                pass
-            try:
-                if dataAsJson["oggquality"] != 0:
-                    oggQuality = dataAsJson["oggquality"]
-            except:
-                pass
-            try:
-                if dataAsJson["mp3bitrate"] != 0:                    
-                    mp3Bitrate = dataAsJson["mp3bitrate"]
-            except:
-                pass
-
-    # Settings from settings-file are overruled by parameters on the command-line
     if args.verbose:
         showVerbose = args.verbose
     if args.dry_run:        
