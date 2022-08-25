@@ -242,30 +242,31 @@ def CleanUpLossyTree(lossyTree, lossyFormat):
         dirNames.sort()
 
         for fileName in sorted(fileNames):
-            if fnmatch(fileName, '*.' + lossyFormat): 
-                lossyFile = os.path.join(dir, fileName) 
-                
-                sourcePath = dir.replace(lossyTree, sourceTree)        
-                sourceFile = os.path.join(sourcePath, fileName)        
-                sourceFile = os.path.splitext(sourceFile)[0] + '.flac' 
-
-                if not os.path.isfile(sourceFile):                              
-                    if not dryRun:
-                        os.remove(lossyFile)
-                    Log('- file deleted: ' + lossyFile)
-                    obsoleteFilesDeletedCount  += 1
-            else: 
-                if fnmatch(fileName, '*.*'): 
+            if not fnmatch(fileName, '.*'):  # Exclude hidden files from cleanup
+                if fnmatch(fileName, '*.' + lossyFormat):  # Check lossy files
                     lossyFile = os.path.join(dir, fileName) 
                     
                     sourcePath = dir.replace(lossyTree, sourceTree)        
                     sourceFile = os.path.join(sourcePath, fileName)        
+                    sourceFile = os.path.splitext(sourceFile)[0] + '.flac' 
 
                     if not os.path.isfile(sourceFile):                              
                         if not dryRun:
                             os.remove(lossyFile)
                         Log('- file deleted: ' + lossyFile)
                         obsoleteFilesDeletedCount  += 1
+                else: 
+                    if fnmatch(fileName, '*.*'):  # Check misc files like cover.jpg
+                        lossyFile = os.path.join(dir, fileName) 
+                        
+                        sourcePath = dir.replace(lossyTree, sourceTree)        
+                        sourceFile = os.path.join(sourcePath, fileName)        
+
+                        if not os.path.isfile(sourceFile):                              
+                            if not dryRun:
+                                os.remove(lossyFile)
+                            Log('- file deleted: ' + lossyFile)
+                            obsoleteFilesDeletedCount  += 1
 
     RemoveEmptyDirectories(lossyTree)
     RemoveEmptyDirectories(lossyTree) # Do it twice to also remove empty parent directories
