@@ -445,9 +445,9 @@ def Main():
     parser.add_argument('-d', '--dry-run', help="perform a trial run with no changes made",  action="store_true")        
     parser.add_argument('--logfolder', type=str, help="folder where log (= transcoder.log) is stored; no folder is no logging",  nargs=1) 
     parser.add_argument('--mp3folder', type=str, help="folder where transcoded mp3's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
-    parser.add_argument('--mp3bitrate', type=int, help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[128, 256, 384]) 
+    parser.add_argument('--mp3bitrate', type=int, help="quality of the transcoded ogg files; default is 128",  nargs=1,  choices=[0, 128, 256, 384]) 
     parser.add_argument('--oggfolder', type=str, help="folder where transcoded ogg's are stored; no folder is no transcoding, folder must exist",  nargs=1) 
-    parser.add_argument('--oggquality', type=int, help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[1, 2, 3, 4, 5]) 
+    parser.add_argument('--oggquality', type=int, help="quality of the transcoded ogg files; default is 1",  nargs=1,  choices=[0, 1, 2, 3, 4, 5]) 
 
     args = parser.parse_args()    
 
@@ -472,10 +472,10 @@ def Main():
         oggTree = args.oggfolder[0]
     oggTree = StripLastSlashFromPathName(oggTree)
             
-    if (args.oggquality != None) and (args.oggquality[0] != ''):
+    if (args.oggquality != None) and (args.oggquality[0] != '') and (args.oggquality[0] != 0):
         oggQuality = args.oggquality[0]
 
-    if (args.mp3bitrate != None) and (args.mp3bitrate[0] != ''):
+    if (args.mp3bitrate != None) and (args.mp3bitrate[0] != '') and (args.mp3bitrate[0] != 0):
         mp3Bitrate = args.mp3bitrate[0]
 
     oggEncoding = (oggTree != '')
